@@ -14,3 +14,7 @@ val jsonClient = HttpClient {
 suspend fun getDeviceList(): List<Device>{
     return jsonClient.get(endpoint + Device.path)
 }
+
+suspend fun deleteDevice(id: Int): List<Device>{
+    return jsonClient.delete(endpoint + Device.path + "/${id}")
+}

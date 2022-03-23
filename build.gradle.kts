@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.android.synthetic.androidIdToName
-
 val ktorVersion = "1.6.7"
 val serializationVersion = "1.3.2"
 val logbackVersion = "1.2.10"

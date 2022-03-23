@@ -4,6 +4,8 @@ import database.MongoDB
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.http.*
+import io.ktor.http.content.*
+import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.serialization.*
 import io.ktor.server.engine.*
@@ -32,7 +34,7 @@ fun main() {
             lease(mongoDB)
             reservation(mongoDB)
 
-            /*get("/") {
+            get("/") {
                 call.respondText(
                     this::class.java.classLoader.getResource("index.html")!!.readText(),
                     ContentType.Text.Html
@@ -40,7 +42,7 @@ fun main() {
             }
             static("/") {
                 resources("")
-            }*/
+            }
         }
     }.start(wait = true)
 }

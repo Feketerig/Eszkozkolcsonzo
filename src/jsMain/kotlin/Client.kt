@@ -1,9 +1,8 @@
-import react.dom.render
 import kotlinx.browser.document
-import kotlinx.browser.window
+import react.create
+import react.dom.render
 
 fun main() {
-    window.onload = {
-
-    }
+    val container = document.getElementById("root") ?: error("Couldn't find container!")
+    render(App.create(), container)
 }
