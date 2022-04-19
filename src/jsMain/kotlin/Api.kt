@@ -16,11 +16,11 @@ suspend fun getDeviceList(): List<Device>{
     return jsonClient.get(endpoint + Device.path)
 }
 
-suspend fun deleteDevice(id: Int): List<Device>{ //TODO: if the return value is Unit changes are instant on the UI. Otherwise visible only after reload
+suspend fun deleteDevice(id: Int) {
     return jsonClient.delete(endpoint + Device.path + "/${id}")
 }
 
-suspend fun addDevice(device: Device): List<Device> { //TODO: if the return value is Unit changes are instant on the UI. Otherwise visible only after reload
+suspend fun addDevice(device: Device) {
     return jsonClient.post(endpoint + Device.path){
         contentType(ContentType.Application.Json)
         body = device
