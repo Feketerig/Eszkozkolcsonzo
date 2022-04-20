@@ -1,3 +1,4 @@
+import api.ServerApi
 import io.ktor.client.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
@@ -13,15 +14,15 @@ val jsonClient = HttpClient {
 }
 
 suspend fun getDeviceList(): List<Device>{
-    return jsonClient.get(endpoint + Device.path)
+    return jsonClient.get(endpoint + ServerApi.devicePath)
 }
 
 suspend fun deleteDevice(id: Int) {
-    return jsonClient.delete(endpoint + Device.path + "/${id}")
+    return jsonClient.delete(endpoint + ServerApi.devicePath + "/${id}")
 }
 
 suspend fun addDevice(device: Device) {
-    return jsonClient.post(endpoint + Device.path){
+    return jsonClient.post(endpoint + ServerApi.devicePath){
         contentType(ContentType.Application.Json)
         body = device
     }
