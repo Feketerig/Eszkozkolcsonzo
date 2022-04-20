@@ -1,6 +1,6 @@
 package hu.bme.aut.application
 
-import api.ServerApi
+import utils.path.ServerApiPath
 import database.Database
 import database.WrongIdException
 import io.ktor.application.*
@@ -9,8 +9,8 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 
-fun Routing.device(database: Database){
-    route(ServerApi.devicePath) {
+fun Routing.deviceApi(database: Database){
+    route(ServerApiPath.devicePath) {
         get() {
             call.respond(database.getAllDevices())
         }
@@ -34,8 +34,8 @@ fun Routing.device(database: Database){
     }
 }
 
-fun Routing.lease(database: Database){
-    route(ServerApi.leasePath) {
+fun Routing.leaseApi(database: Database){
+    route(ServerApiPath.leasePath) {
         get() {
             call.respond(database.getActiveLeases())
         }
@@ -59,8 +59,8 @@ fun Routing.lease(database: Database){
     }
 }
 
-fun Routing.reservation(database: Database){
-    route(ServerApi.reservationPath) {
+fun Routing.reservationApi(database: Database){
+    route(ServerApiPath.reservationPath) {
         get() {
             call.respond(database.getAllReservations())
         }

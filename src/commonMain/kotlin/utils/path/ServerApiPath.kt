@@ -1,6 +1,6 @@
-package api
+package utils.path
 
-class ServerApi {
+class ServerApiPath {
 
     companion object {
         const val apiPath: String = "/api"
