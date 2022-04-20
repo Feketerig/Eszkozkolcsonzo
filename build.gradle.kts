@@ -2,6 +2,7 @@ val ktorVersion = "1.6.7"
 val serializationVersion = "1.3.2"
 val logbackVersion = "1.2.10"
 val reactVersion = "17.0.2-pre.299-kotlin-1.6.10"
+val reactRouterVersion = "6.2.1-pre.299-kotlin-1.6.10"
 val kmongoVersion = "4.5.0"
 
 plugins {
@@ -68,6 +69,8 @@ kotlin {
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-react:$reactVersion")
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-react-dom:$reactVersion")
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-react-css:$reactVersion")
+
+                implementation("org.jetbrains.kotlin-wrappers:kotlin-react-router-dom:$reactRouterVersion")
             }
         }
         val jsTest by getting
