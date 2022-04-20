@@ -9,8 +9,4 @@ data class Lease(
     val kiado: User,
     val atvevo: User,
     val active: Boolean
-){
-    companion object{
-        const val path = "/leases"
-    }
-}
+){}

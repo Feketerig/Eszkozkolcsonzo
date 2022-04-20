@@ -11,10 +11,6 @@ data class User(
     val email: String,
     val privilege: Privilege
 ){
-    companion object {
-        const val path = "/users"
-    }
-
     @Serializable
     enum class Privilege{
         Admin, User
