@@ -1,4 +1,5 @@
 val ktorVersion = "1.6.7"
+val kotlinxDatetimeVersion = "0.3.2"
 val serializationVersion = "1.3.2"
 val logbackVersion = "1.2.10"
 val reactVersion = "17.0.2-pre.299-kotlin-1.6.10"
@@ -42,6 +43,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$serializationVersion")
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:$kotlinxDatetimeVersion")
                 implementation("io.ktor:ktor-client-core:$ktorVersion")
             }
         }
