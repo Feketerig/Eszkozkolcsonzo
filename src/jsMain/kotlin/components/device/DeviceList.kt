@@ -1,6 +1,8 @@
 package components.device
 
 import addDevice
+import addReservation
+import components.reservation.ReservationCreateComponent
 import deleteDevice
 import getDeviceList
 import kotlinx.coroutines.MainScope
@@ -15,9 +17,7 @@ import react.useState
 private val scope = MainScope()
 private var lastID = 0                  //TODO create a viable ID generator
 
-external interface DeviceListProps : Props {
-
-}
+external interface DeviceListProps : Props
 
 val DeviceList = FC<DeviceListProps> {
     var deviceList by useState(emptyList<Device>())
@@ -27,6 +27,7 @@ val DeviceList = FC<DeviceListProps> {
             deviceList = getDeviceList()
         }
     }
+
 
     ul {
         deviceList.forEach { item ->
@@ -48,6 +49,15 @@ val DeviceList = FC<DeviceListProps> {
             scope.launch {
                 addDevice(device)
                 deviceList = getDeviceList()
+            }
+        }
+    }
+
+    ReservationCreateComponent {
+        device = Device (100, "Kutyaház", "egy kutyának", true)
+        onCreateReservation = { reservation ->
+            scope.launch {
+                addReservation(reservation)
             }
         }
     }

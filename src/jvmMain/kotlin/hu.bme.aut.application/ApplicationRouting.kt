@@ -4,33 +4,21 @@ import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import io.ktor.util.pipeline.*
 import utils.path.AppPath
 
-fun Routing.pages() { //TODO this looks dumb. We should response with the same html file on all paths (excluding the api calls!)
+fun Routing.pages() {
     route("/") {
-        get() {
-            call.respondText(
-                this::class.java.classLoader.getResource("index.html")!!.readText(),
-                ContentType.Text.Html
-            )
-        }
-        get(AppPath.devices) {
-            call.respondText(
-                this::class.java.classLoader.getResource("index.html")!!.readText(),
-                ContentType.Text.Html
-            )
-        }
-        get(AppPath.reservations) {
-            call.respondText(
-                this::class.java.classLoader.getResource("index.html")!!.readText(),
-                ContentType.Text.Html
-            )
-        }
-        get(AppPath.leases) {
-            call.respondText(
-                this::class.java.classLoader.getResource("index.html")!!.readText(),
-                ContentType.Text.Html
-            )
-        }
+        get(getDefaultPage)
+        get(AppPath.devices + "/{...}", getDefaultPage)
+        get(AppPath.reservations + "/{...}", getDefaultPage)
+        get(AppPath.leases + "/{...}", getDefaultPage)
     }
+}
+
+val getDefaultPage: suspend PipelineContext<Unit, ApplicationCall>.(Unit) -> Unit = {
+    call.respondText(
+        this::class.java.classLoader.getResource("index.html")!!.readText(),
+        ContentType.Text.Html
+    )
 }

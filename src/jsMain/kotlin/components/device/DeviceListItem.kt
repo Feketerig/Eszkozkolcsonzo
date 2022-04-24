@@ -1,8 +1,10 @@
 package components.device
 
+import kotlinx.browser.window
 import model.Device
 import react.FC
 import react.Props
+import react.dom.html.ReactHTML.button
 import react.dom.html.ReactHTML.li
 import react.key
 
@@ -16,8 +18,20 @@ val DeviceListItem = FC<DeviceListItemProps> { props ->
         key = props.device.toString()
         +"${props.device.name} \t ${props.device.desc} \t ${props.device.available}"
 
-        onClick = {
-            props.onDelete(props.device)
+        button {
+            +"Delete"
+            onClick = {
+                it.preventDefault()
+                props.onDelete(props.device)
+            }
+        }
+
+        button {
+            +"Reserve"
+            onClick = {
+                it.preventDefault()
+                window.alert("reserved: ${props.device.name}")
+            }
         }
     }
 }

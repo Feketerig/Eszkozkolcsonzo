@@ -6,6 +6,7 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.browser.window
 import model.Device
+import model.Reservation
 
 val endpoint = window.location.origin
 
@@ -22,8 +23,15 @@ suspend fun deleteDevice(id: Int) {
 }
 
 suspend fun addDevice(device: Device) {
-    return jsonClient.post(endpoint + ServerApiPath.devicePath){
+    return jsonClient.post(endpoint + ServerApiPath.devicePath) {
         contentType(ContentType.Application.Json)
         body = device
+    }
+}
+
+suspend fun addReservation(reservation: Reservation) {
+    return jsonClient.post(endpoint + ServerApiPath.reservationPath) {
+        contentType(ContentType.Application.Json)
+        body = reservation
     }
 }
