@@ -21,6 +21,7 @@ external interface DeviceListProps : Props
 
 val DeviceList = FC<DeviceListProps> {
     var deviceList by useState(emptyList<Device>())
+    val (selectedDevice, setSelected) = useState<Device?>(null)
 
     useEffectOnce {
         scope.launch {
@@ -33,11 +34,18 @@ val DeviceList = FC<DeviceListProps> {
         deviceList.forEach { item ->
             DeviceListItem {
                 device = item
+
                 onDelete = { device ->
                     MainScope().launch {
                         deleteDevice(device.id)
+                        if (selectedDevice != null && selectedDevice.id == device.id) {
+                            setSelected(null)
+                        }
                         deviceList = getDeviceList()
                     }
+                }
+                onSelect = { device ->
+                    setSelected(device)
                 }
             }
         }
@@ -53,11 +61,13 @@ val DeviceList = FC<DeviceListProps> {
         }
     }
 
-    ReservationCreateComponent {
-        device = Device (100, "Kutyaház", "egy kutyának", true)
-        onCreateReservation = { reservation ->
-            scope.launch {
-                addReservation(reservation)
+    if (selectedDevice != null){
+        ReservationCreateComponent {
+            device = selectedDevice
+            onCreateReservation = { reservation ->
+                scope.launch {
+                    addReservation(reservation)
+                }
             }
         }
     }

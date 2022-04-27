@@ -1,6 +1,5 @@
 package components.device
 
-import kotlinx.browser.window
 import model.Device
 import react.FC
 import react.Props
@@ -11,6 +10,7 @@ import react.key
 external interface DeviceListItemProps : Props {
     var device: Device
     var onDelete: (Device) -> Unit
+    var onSelect: (Device) -> Unit
 }
 
 val DeviceListItem = FC<DeviceListItemProps> { props ->
@@ -30,7 +30,7 @@ val DeviceListItem = FC<DeviceListItemProps> { props ->
             +"Reserve"
             onClick = {
                 it.preventDefault()
-                window.alert("reserved: ${props.device.name}")
+                props.onSelect(props.device)
             }
         }
     }
