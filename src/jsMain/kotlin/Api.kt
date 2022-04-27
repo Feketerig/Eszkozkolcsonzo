@@ -29,6 +29,10 @@ suspend fun addDevice(device: Device) {
     }
 }
 
+suspend fun getReservationList(): List<Reservation>{
+    return jsonClient.get(endpoint + ServerApiPath.reservationPath)
+}
+
 suspend fun addReservation(reservation: Reservation) {
     return jsonClient.post(endpoint + ServerApiPath.reservationPath) {
         contentType(ContentType.Application.Json)

@@ -1,9 +1,6 @@
 import components.TestComponent
 import components.device.DeviceList
-import components.reservation.ReservationCreateComponent
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
-import model.Device
+import components.reservation.ReservationList
 import utils.path.AppPath
 import react.*
 import react.dom.html.ReactHTML.div
@@ -27,14 +24,7 @@ val App = FC<Props> {
                 }
                 Route {
                     path = AppPath.reservations
-                    element = ReservationCreateComponent.create {
-                        device = Device(999, "bing", "boing", true) //TODO: this should be an id, and the device should be queried from inside of the component
-                        onCreateReservation = { reservation ->
-                            MainScope().launch {
-                                addReservation(reservation)
-                            }
-                        }
-                    }
+                    element = ReservationList.create()
                 }
                 Route {
                     path = AppPath.leases
