@@ -39,7 +39,7 @@ val ReservationCreateComponent = FC<ReservationCreateProps> { props ->
 
     val submitHandler: FormEventHandler<HTMLFormElement> = {
         it.preventDefault()
-        val reservation = Reservation(0, 0, Date(startDate).getTime().toLong(), Date(endDate).getTime().toLong(), 0)
+        val reservation = Reservation(0, props.device.id, Date(startDate).getTime().toLong(), Date(endDate).getTime().toLong(), 0)
         props.onCreateReservation(reservation)
     }
 
