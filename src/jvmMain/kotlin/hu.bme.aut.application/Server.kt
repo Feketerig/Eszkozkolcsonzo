@@ -13,7 +13,7 @@ import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.reactivestreams.KMongo
 
 fun main() {
-    val mongoDB = MongoDB(database = KMongo.createClient().coroutine.getDatabase("database"))
+    val mongoDB = MongoDB(database = KMongo.createClient().coroutine.getDatabase("eszkozkolcsonzo"))
 
     embeddedServer(Netty, 8080) {
         install(ContentNegotiation) {
