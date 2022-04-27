@@ -19,6 +19,8 @@ import react.useState
 import utils.YYYY_MM_DD
 import kotlin.js.Date
 
+private var lastID = 0                  //TODO create a viable ID generator
+
 external interface ReservationCreateProps : Props {
     var device: Device
     var onCreateReservation: (reservation: Reservation) -> Unit
@@ -39,7 +41,9 @@ val ReservationCreateComponent = FC<ReservationCreateProps> { props ->
 
     val submitHandler: FormEventHandler<HTMLFormElement> = {
         it.preventDefault()
-        val reservation = Reservation(0, props.device.id, Date(startDate).getTime().toLong(), Date(endDate).getTime().toLong(), 0)
+        val reservation = Reservation(lastID++, props.device.id,
+            Date(startDate).getTime().toLong(),
+            Date(endDate).getTime().toLong(), 0)
         props.onCreateReservation(reservation)
     }
 
