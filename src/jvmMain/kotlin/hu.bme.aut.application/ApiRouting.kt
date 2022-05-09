@@ -1,6 +1,5 @@
 package hu.bme.aut.application
 
-import utils.path.ServerApiPath
 import database.Database
 import database.WrongIdException
 import io.ktor.application.*
@@ -8,6 +7,7 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import utils.path.ServerApiPath
 
 fun Routing.deviceApi(database: Database){
     route(ServerApiPath.devicePath) {
@@ -47,6 +47,22 @@ fun Routing.leaseApi(database: Database){
                 call.respond(HttpStatusCode.NotFound)
             }
         }
+        get("/reservation/{id}") {
+            try {
+                val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
+                call.respond(database.getLeaseIdByReservationId(id))
+            } catch (e: WrongIdException) {
+                call.respond(HttpStatusCode.NotFound)
+            }
+        }
+        put("/{id}") {
+            try {
+                val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
+                database.deactivateLease(id)
+            } catch (e: WrongIdException) {
+                call.respond(HttpStatusCode.NotFound)
+            }
+        }
         post() {
             database.addLease(call.receive())
             call.respond(HttpStatusCode.OK)
@@ -72,6 +88,22 @@ fun Routing.reservationApi(database: Database){
                 call.respond(HttpStatusCode.NotFound)
             }
         }
+        get("/user/{id}") {
+            try {
+                val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
+                call.respond(database.getAllReservationByUserId(id))
+            } catch (e: WrongIdException) {
+                call.respond(HttpStatusCode.NotFound)
+            }
+        }
+        get("/device/{id}") {
+            try {
+                val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
+                call.respond(database.getReservationByDeviceId(id))
+            } catch (e: WrongIdException) {
+                call.respond(HttpStatusCode.NotFound)
+            }
+        }
         post() {
             database.addReservation(call.receive())
             call.respond(HttpStatusCode.OK)
@@ -79,6 +111,35 @@ fun Routing.reservationApi(database: Database){
         delete("/{id}") {
             val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
             database.deleteReservation(id)
+            call.respond(HttpStatusCode.OK)
+        }
+    }
+}
+
+fun Routing.userApi(database: Database){
+    route(ServerApiPath.userPath) {
+        get() {
+            val email = call.request.queryParameters["email"] ?: error("Invalid username")
+            call.respond(database.getUserByEmail(email))
+        }
+        get("/{id}") {
+            try {
+                val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
+                call.respond(database.getUserById(id))
+            } catch (e: WrongIdException) {
+                call.respond(HttpStatusCode.NotFound)
+            }
+        }
+        get("/{id}/name") {
+            try {
+                val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
+                call.respond(database.getUserNameById(id))
+            } catch (e: WrongIdException) {
+                call.respond(HttpStatusCode.NotFound)
+            }
+        }
+        post() {
+            database.addUser(call.receive())
             call.respond(HttpStatusCode.OK)
         }
     }

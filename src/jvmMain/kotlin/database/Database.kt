@@ -3,6 +3,7 @@ package database
 import model.Device
 import model.Lease
 import model.Reservation
+import model.User
 
 interface Database {
 
@@ -26,11 +27,25 @@ interface Database {
 
     suspend fun deactivateLease(id: Int)
 
+    suspend fun getLeaseIdByReservationId(id: Int): Int
+
     suspend fun getAllReservations(): List<Reservation>
 
     suspend fun getReservation(id: Int): Reservation
 
+    suspend fun getAllReservationByUserId(id: Int): List<Reservation>
+
+    suspend fun getReservationByDeviceId(id: Int): Reservation
+
     suspend fun addReservation(reservation: Reservation)
 
     suspend fun deleteReservation(id: Int)
+
+    suspend fun getUserByEmail(email: String): User
+
+    suspend fun addUser(user: User)
+
+    suspend fun getUserNameById(userId: Int): String
+
+    suspend fun getUserById(userId: Int): User
 }
