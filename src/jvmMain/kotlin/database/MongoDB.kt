@@ -5,6 +5,7 @@ import model.Lease
 import model.Reservation
 import model.User
 import org.litote.kmongo.coroutine.CoroutineDatabase
+import org.litote.kmongo.div
 import org.litote.kmongo.eq
 
 class MongoDB(
@@ -48,10 +49,22 @@ class MongoDB(
         leases.updateOne(Lease::id eq id, Lease::active eq false)
     }
 
+    override suspend fun getLeaseIdByReservationId(id: Int): Int {
+        return leases.findOne(Lease::reservation / Reservation::id eq id)?.id ?: 1
+    }
+
     override suspend fun getAllReservations(): List<Reservation> = reservations.find().toList()
 
     override suspend fun getReservation(id: Int): Reservation =
         reservations.find(Reservation::id eq id).first() ?: throw WrongIdException()
+
+    override suspend fun getAllReservationByUserId(id: Int): List<Reservation> {
+        return reservations.find(Reservation::userId eq id).toList()
+    }
+
+    override suspend fun getReservationByDeviceId(id: Int): Reservation {
+        return reservations.findOne(Reservation::deviceId eq id) ?: throw WrongIdException()
+    }
 
     override suspend fun addReservation(reservation: Reservation) {
         reservations.insertOne(reservation)
@@ -59,5 +72,21 @@ class MongoDB(
 
     override suspend fun deleteReservation(id: Int) {
         reservations.deleteOne(Reservation::id eq id)
+    }
+
+    override suspend fun getUserByEmail(email: String): User {
+        return users.findOne(User::email eq email) ?: throw WrongIdException()
+    }
+
+    override suspend fun addUser(user: User) {
+        users.insertOne(user)
+    }
+
+    override suspend fun getUserNameById(userId: Int): String {
+        return users.findOneById(userId)?.name ?: throw WrongIdException()
+    }
+
+    override suspend fun getUserById(userId: Int): User {
+        return users.findOneById(userId) ?: throw WrongIdException()
     }
 }

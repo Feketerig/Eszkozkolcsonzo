@@ -32,6 +32,7 @@ fun main() {
             deviceApi(mongoDB)
             leaseApi(mongoDB)
             reservationApi(mongoDB)
+            userApi(mongoDB)
 
             pages()
 
