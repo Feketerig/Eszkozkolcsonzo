@@ -7,6 +7,7 @@ import io.ktor.http.*
 import kotlinx.browser.window
 import model.Device
 import model.Reservation
+import model.User
 
 val endpoint = window.location.origin
 
@@ -18,24 +19,41 @@ suspend fun getDeviceList(): List<Device>{
     return jsonClient.get(endpoint + ServerApiPath.devicePath)
 }
 
-suspend fun deleteDevice(id: Int) {
+suspend fun deleteDevice(id: Int): Unit {
     return jsonClient.delete(endpoint + ServerApiPath.devicePath + "/${id}")
 }
 
-suspend fun addDevice(device: Device) {
+suspend fun addDevice(device: Device): Unit {
     return jsonClient.post(endpoint + ServerApiPath.devicePath) {
         contentType(ContentType.Application.Json)
         body = device
     }
 }
 
-suspend fun getReservationList(): List<Reservation>{
+suspend fun getReservationList(): List<Reservation> {
     return jsonClient.get(endpoint + ServerApiPath.reservationPath)
 }
 
-suspend fun addReservation(reservation: Reservation) {
+suspend fun addReservation(reservation: Reservation): Unit {
     return jsonClient.post(endpoint + ServerApiPath.reservationPath) {
         contentType(ContentType.Application.Json)
         body = reservation
+    }
+}
+
+suspend fun registerUser(user: User): Unit {
+    return jsonClient.post(endpoint + ServerApiPath.userPath) {
+        contentType(ContentType.Application.Json)
+        body = user
+    }
+}
+
+/**
+ * returns the token for the user
+ */
+suspend fun checkUserLogin(email: String, pwHash: String): String {
+    return jsonClient.post(endpoint + ServerApiPath.userPath + "/login") {
+        contentType(ContentType.Application.Json)
+        body = "$email|$pwHash"
     }
 }

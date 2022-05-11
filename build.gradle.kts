@@ -5,6 +5,7 @@ val logbackVersion = "1.2.10"
 val reactVersion = "17.0.2-pre.299-kotlin-1.6.10"
 val reactRouterVersion = "6.2.1-pre.299-kotlin-1.6.10"
 val kmongoVersion = "4.5.0"
+val kryptoVersion = "2.4.12"
 
 plugins {
     kotlin("multiplatform") version "1.6.10"
@@ -45,6 +46,7 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$serializationVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:$kotlinxDatetimeVersion")
                 implementation("io.ktor:ktor-client-core:$ktorVersion")
+                implementation("com.soywiz.korlibs.krypto:krypto:$kryptoVersion")
             }
         }
         val commonTest by getting {

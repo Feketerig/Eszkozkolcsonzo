@@ -1,4 +1,4 @@
-package utils
+package utils.converters
 
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toJSDate

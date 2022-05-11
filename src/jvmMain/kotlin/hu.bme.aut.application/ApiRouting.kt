@@ -142,5 +142,15 @@ fun Routing.userApi(database: Database){
             database.addUser(call.receive())
             call.respond(HttpStatusCode.OK)
         }
+        post("/login") {
+            val msg = call.receive<String>().drop(1).dropLast(1).split("|")
+            val user = database.getUserByEmail(msg[0])
+            if (user.password_hash == msg[1]) {
+                call.respond(user.auth_token)
+            }
+            else {
+                call.respond(HttpStatusCode.Unauthorized)
+            }
+        }
     }
 }
