@@ -21,6 +21,7 @@ external interface LoginComponentProps : Props
 val LoginComponent = FC<LoginComponentProps> { props ->
     val (email, setEmail) = useState("")
     val (password, setPassword) = useState("")
+    val (token, setToken) = useState("")
 
     form {
         div {
@@ -38,10 +39,12 @@ val LoginComponent = FC<LoginComponentProps> { props ->
             }
         }
 
+        +token
+
         onSubmit = {
             it.preventDefault()
             scope.launch {
-                checkUserLogin(email, password.sha256())
+                setToken(checkUserLogin(email, password.sha256()))
                 //TODO save the token, and navigate to devices
             }
         }

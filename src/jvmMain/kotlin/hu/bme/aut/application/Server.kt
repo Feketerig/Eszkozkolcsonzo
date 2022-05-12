@@ -1,6 +1,7 @@
 package hu.bme.aut.application
 
 import database.MongoDB
+import hu.bme.aut.application.security.configureSecurity
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.http.*
@@ -28,6 +29,7 @@ fun main() {
         install(Compression) {
             gzip()
         }
+        configureSecurity()
         install(Routing) {
             deviceApi(mongoDB)
             leaseApi(mongoDB)
@@ -35,6 +37,8 @@ fun main() {
             userApi(mongoDB)
 
             pages()
+
+            authtest()
 
             static("/") {
                 resources("")
