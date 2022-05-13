@@ -12,8 +12,8 @@ import react.dom.html.ReactHTML
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.form
 import react.useState
-import utils.components.LabeledInputField
-import utils.converters.sha256
+import components.LabeledInputField
+import utils.hash.sha256
 import utils.path.AppPath
 import utils.session.TokenStore
 

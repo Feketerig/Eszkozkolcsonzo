@@ -6,7 +6,7 @@ import kotlin.js.Date
 
 
 fun Instant.YYYY_MM_DD(): String {
-        return toJSDate().YYYY_MM_DD()
+    return toJSDate().YYYY_MM_DD()
 }
 
 fun Date.YYYY_MM_DD(): String {

@@ -1,4 +1,4 @@
-package utils.converters
+package utils.hash
 
 import com.soywiz.krypto.sha256
 import io.ktor.utils.io.core.*

@@ -3,7 +3,7 @@ package utils.path
 class ServerApiPath {
 
     companion object {
-        const val apiPath: String = "/api"
+        private const val apiPath: String = "/api"
 
         val devicePath: String
             get() {return "$apiPath/devices" }

@@ -12,9 +12,9 @@ import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.form
 import react.useState
 import registerUser
-import utils.components.LabeledInputField
-import utils.converters.generateAuthToken
-import utils.converters.sha256
+import components.LabeledInputField
+import utils.hash.generateAuthToken
+import utils.hash.sha256
 
 private val scope = MainScope()
 
