@@ -13,9 +13,9 @@ fun Application.pages() {
             get(getDefaultPage)
             get(AppPath.devices + "/{...}", getDefaultPage)
             get(AppPath.leases + "/{...}", getDefaultPage)
+            get(AppPath.reservations + "/{...}", getDefaultPage)
             get(AppPath.login + "/{...}", getDefaultPage)
             get(AppPath.register + "/{...}", getDefaultPage)
-            get(AppPath.reservations + "/{...}", getDefaultPage)
         }
     }
 }

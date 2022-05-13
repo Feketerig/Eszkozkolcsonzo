@@ -38,8 +38,6 @@ fun main() {
 
             pages()
 
-            authtest()
-
             static("/") {
                 resources("")
             }

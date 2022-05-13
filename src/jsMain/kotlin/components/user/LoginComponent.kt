@@ -1,6 +1,7 @@
 package components.user
 
 import checkUserLogin
+import kotlinx.browser.window
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import react.FC
@@ -13,6 +14,8 @@ import react.dom.html.ReactHTML.form
 import react.useState
 import utils.components.LabeledInputField
 import utils.converters.sha256
+import utils.path.AppPath
+import utils.session.TokenStore
 
 private val scope = MainScope()
 
@@ -21,7 +24,6 @@ external interface LoginComponentProps : Props
 val LoginComponent = FC<LoginComponentProps> { props ->
     val (email, setEmail) = useState("")
     val (password, setPassword) = useState("")
-    val (token, setToken) = useState("")
 
     form {
         div {
@@ -39,13 +41,11 @@ val LoginComponent = FC<LoginComponentProps> { props ->
             }
         }
 
-        +token
-
         onSubmit = {
             it.preventDefault()
             scope.launch {
-                setToken(checkUserLogin(email, password.sha256()))
-                //TODO save the token, and navigate to devices
+                TokenStore.put(checkUserLogin(email, password.sha256()))
+                window.location.href = window.origin + AppPath.devices
             }
         }
 
