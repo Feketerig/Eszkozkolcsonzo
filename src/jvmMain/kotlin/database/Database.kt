@@ -7,6 +7,8 @@ import model.User
 
 interface Database {
 
+    suspend fun getNextGlobalId(): Int
+
     suspend fun getAllDevices(): List<Device>
 
     suspend fun getDevice(id: Int): Device

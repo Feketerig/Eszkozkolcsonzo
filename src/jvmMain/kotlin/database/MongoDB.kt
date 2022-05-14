@@ -4,17 +4,23 @@ import model.Device
 import model.Lease
 import model.Reservation
 import model.User
+import org.litote.kmongo.*
 import org.litote.kmongo.coroutine.CoroutineDatabase
-import org.litote.kmongo.div
-import org.litote.kmongo.eq
 
 class MongoDB(
-    private val database: CoroutineDatabase
+    database: CoroutineDatabase
 ) : Database {
     private val devices = database.getCollection<Device>()
     private val leases = database.getCollection<Lease>()
     private val reservations = database.getCollection<Reservation>()
     private val users = database.getCollection<User>()
+    private val ids = database.getCollection<IdPair>()
+
+    override suspend fun getNextGlobalId(): Int {
+        val nextID = (ids.findOne(IdPair::name eq IdPair.global_id)?.id ?: 0) + 1
+        ids.updateOne(IdPair::name eq IdPair.global_id, setValue(IdPair::id, nextID), upsert())
+        return nextID
+    }
 
     override suspend fun getAllDevices(): List<Device> = devices.find().toList()
 
@@ -89,4 +95,12 @@ class MongoDB(
     override suspend fun getUserById(userId: Int): User {
         return users.findOneById(userId) ?: throw WrongIdException()
     }
+
+    @kotlinx.serialization.Serializable
+    private data class IdPair(val name: String, val id: Int){
+        companion object {
+            val global_id = "GLOBAL"
+        }
+    }
 }
+
