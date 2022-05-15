@@ -1,6 +1,7 @@
 package components.user
 
 import loginAsUser
+import components.LabeledInputField
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import react.FC
@@ -11,10 +12,12 @@ import react.dom.html.ReactHTML
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.form
 import react.useState
-import components.LabeledInputField
+import react.dom.html.ReactHTML.p
 import utils.hash.sha256
 import utils.browser.PageNavigator
 import utils.browser.TokenStore
+import utils.exceptions.NotFoundException
+import utils.exceptions.UnauthorizedException
 
 private val scope = MainScope()
 
@@ -23,6 +26,7 @@ external interface LoginComponentProps : Props
 val LoginComponent = FC<LoginComponentProps> { props ->
     val (email, setEmail) = useState("")
     val (password, setPassword) = useState("")
+    val (message, setMessage) = useState("")
 
     form {
         div {
@@ -40,11 +44,22 @@ val LoginComponent = FC<LoginComponentProps> { props ->
             }
         }
 
+        p {
+            +message
+        }
+
         onSubmit = {
             it.preventDefault()
             scope.launch {
-                TokenStore.put(loginAsUser(email, password.sha256()))
-                PageNavigator.toDevices()
+                try {
+                    TokenStore.put(loginAsUser(email, password.sha256()))
+                    setMessage("")
+                    PageNavigator.toDevices()
+                } catch (e: NotFoundException) {
+                    setMessage("Ezzel az email címmel még senki sem regisztrált!")
+                } catch (e: UnauthorizedException) {
+                    setMessage("Helytelen jelszó!")
+                }
             }
         }
 
