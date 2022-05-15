@@ -1,7 +1,6 @@
 package components.user
 
-import checkUserLogin
-import kotlinx.browser.window
+import loginAsUser
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import react.FC
@@ -14,8 +13,8 @@ import react.dom.html.ReactHTML.form
 import react.useState
 import components.LabeledInputField
 import utils.hash.sha256
-import utils.path.AppPath
-import utils.session.TokenStore
+import utils.browser.PageNavigator
+import utils.browser.TokenStore
 
 private val scope = MainScope()
 
@@ -44,8 +43,8 @@ val LoginComponent = FC<LoginComponentProps> { props ->
         onSubmit = {
             it.preventDefault()
             scope.launch {
-                TokenStore.put(checkUserLogin(email, password.sha256()))
-                window.location.href = window.origin + AppPath.devices
+                TokenStore.put(loginAsUser(email, password.sha256()))
+                PageNavigator.toDevices()
             }
         }
 

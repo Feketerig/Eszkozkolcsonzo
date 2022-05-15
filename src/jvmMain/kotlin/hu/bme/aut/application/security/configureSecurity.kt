@@ -19,9 +19,9 @@ fun Application.configureSecurity() {
                     null
                 }
             }
-            challenge { defaultScheme, realm ->
+            /*challenge { _, _ -> //TODO this made unauthorized api calls respond with the loginpage html.
                 call.respondRedirect(AppPath.login)
-            }
+            }*/
         }
     }
 }

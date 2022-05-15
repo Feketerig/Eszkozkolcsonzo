@@ -1,19 +1,32 @@
 import utils.path.ServerApiPath
 import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.features.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.browser.window
 import model.Device
 import model.Reservation
 import model.User
-import utils.session.TokenStore
+import utils.browser.TokenStore
+import utils.exceptions.*
 
 val endpoint = window.location.origin
 
 val jsonClient = HttpClient {
     install(JsonFeature) { serializer = KotlinxSerializer() }
+    HttpResponseValidator {
+        handleResponseException { exception ->
+            if (exception !is ClientRequestException) return@handleResponseException
+            when (exception.response.status) {
+                HttpStatusCode.Unauthorized -> throw UnauthorizedException()
+                HttpStatusCode.Forbidden -> throw ForbiddenException()
+            }
+        }
+    }
 }
 
 suspend fun getDeviceList(): List<Device>{
@@ -61,7 +74,7 @@ suspend fun registerUser(user: User): Unit {
 /**
  * returns the token for the user
  */
-suspend fun checkUserLogin(email: String, pwHash: String): String {
+suspend fun loginAsUser(email: String, pwHash: String): String {
     return jsonClient.post(endpoint + ServerApiPath.userPath + "/login") {
         contentType(ContentType.Application.Json)
         header("Authorization", "Bearer " + TokenStore.get())

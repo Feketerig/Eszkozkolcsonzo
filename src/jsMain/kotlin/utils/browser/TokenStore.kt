@@ -1,4 +1,4 @@
-package utils.session
+package utils.browser
 
 import kotlinx.browser.window
 

@@ -1,13 +1,18 @@
 package utils.path
 
-class AppPath {
+object AppPath {
+    val devices: String
+        get() = "/devices"
 
-    companion object {
-        const val devices: String = "/devices"
-        const val leases: String = "/leases"
-        const val reservations: String = "/reservations"
+    val leases: String
+        get() = "/leases"
 
-        const val register: String = "/register"
-        const val login: String = "/login"
-    }
+    val reservations: String
+        get() = "/reservations"
+
+    val register: String
+        get() = "/register"
+
+    val login: String
+        get() = "/login"
 }
