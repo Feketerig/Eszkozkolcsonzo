@@ -57,7 +57,7 @@ class MongoDB(
     }
 
     override suspend fun getLeaseIdByReservationId(id: Int): Int {
-        return leases.findOne(Lease::reservation / Reservation::id eq id)?.id ?: 1
+        return leases.findOne(Lease::reservationId / Reservation::id eq id)?.id ?: 1
     }
 
     override suspend fun getAllReservations(): List<Reservation> = reservations.find().toList()

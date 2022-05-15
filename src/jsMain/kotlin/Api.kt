@@ -55,12 +55,11 @@ suspend fun getReservationList(): List<Reservation> {
     }
 }
 
-suspend fun addReservation(deviceId: Int, userId: Int, from: Long, to: Long): Unit {
+suspend fun addReservation(deviceId: Int, from: Long, to: Long): Unit {
     return jsonClient.post(endpoint + ServerApiPath.reservationPath) {
         contentType(ContentType.Application.Json)
         header("Authorization", "Bearer " + TokenStore.get())
         parameter("deviceid", deviceId)
-        parameter("userid", userId)
         parameter("from", from)
         parameter("to", to)
     }

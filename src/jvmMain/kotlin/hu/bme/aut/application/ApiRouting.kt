@@ -3,6 +3,7 @@ package hu.bme.aut.application
 import database.Database
 import database.WrongIdException
 import hu.bme.aut.application.security.JwtConfig
+import hu.bme.aut.application.security.UserIdPrincipal
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.http.*
@@ -124,7 +125,7 @@ fun Application.reservationApi(database: Database) {
                 }
                 post() {
                     val deviceid = call.parameters["deviceid"]?.toInt() ?: error("device must be specified")
-                    val userid = call.parameters["userid"]?.toInt() ?: error("user must be specified")
+                    val userid = (call.authentication.principal as UserIdPrincipal).id
                     val from = call.parameters["from"]?.toLong() ?: error("start date must be specified")
                     val to = call.parameters["to"]?.toLong() ?: error("end date must be specified")
                     database.addReservation(Reservation(database.getNextReservationId(), deviceid, from, to, userid))

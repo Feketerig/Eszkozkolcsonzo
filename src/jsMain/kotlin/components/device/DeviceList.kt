@@ -72,7 +72,7 @@ val DeviceList = FC<DeviceListProps> {
             device = selectedDevice
             onCreateReservation = { deviceId, from, to ->
                 scope.launch {
-                    addReservation(deviceId, 0, from, to) //TODO: get userid from... well, from somewhere.
+                    addReservation(deviceId, from, to)
                 }
             }
         }
