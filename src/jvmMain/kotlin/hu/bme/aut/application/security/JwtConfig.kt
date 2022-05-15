@@ -10,7 +10,11 @@ object JwtConfig {
     private const val SECRET = "65adff1561fsg6fd51fgf5h61gga1d6fafsd61fgs" //TODO: should be loaded from a config file
     private const val ISSUER = "eszkozkolcsonzo-app"
     private const val AUDIENCE = "eszkozkolcsonzo-app"
+
     const val claim_ID = "id"
+    const val claim_NAME = "name"
+    const val claim_EMAIL = "email"
+    const val claim_PRIV = "priv"
 
     private const val validityInMs = 3600_000 * 3 // 3 hours
     private val algorithm = Algorithm.HMAC256(SECRET)
@@ -21,11 +25,14 @@ object JwtConfig {
         .withAudience(AUDIENCE)
         .build()
 
-    fun createAccessToken(id: Int): String = JWT.create()
-        //.withSubject("Authentication")
+    fun createAccessToken(id: Int, name: String, email: String, privilege: String): String = JWT.create()
+        .withSubject("Authentication")
         .withIssuer(ISSUER)
         .withAudience(AUDIENCE)
         .withClaim(claim_ID, id)
+        .withClaim(claim_NAME, name)
+        .withClaim(claim_EMAIL, email)
+        .withClaim(claim_PRIV, privilege)
         .withExpiresAt(getExpiration())
         .sign(algorithm)
 

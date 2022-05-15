@@ -3,7 +3,7 @@ package hu.bme.aut.application
 import database.Database
 import database.WrongIdException
 import hu.bme.aut.application.security.JwtConfig
-import hu.bme.aut.application.security.UserIdPrincipal
+import hu.bme.aut.application.security.UserAuthPrincipal
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.http.*
@@ -125,7 +125,7 @@ fun Application.reservationApi(database: Database) {
                 }
                 post() {
                     val deviceid = call.parameters["deviceid"]?.toInt() ?: error("device must be specified")
-                    val userid = (call.authentication.principal as UserIdPrincipal).id
+                    val userid = (call.authentication.principal as UserAuthPrincipal).id
                     val from = call.parameters["from"]?.toLong() ?: error("start date must be specified")
                     val to = call.parameters["to"]?.toLong() ?: error("end date must be specified")
                     database.addReservation(Reservation(database.getNextReservationId(), deviceid, from, to, userid))
@@ -175,8 +175,7 @@ fun Application.userApi(database: Database) {
                 val phone = call.parameters["phone"] ?: ""
                 val address = call.parameters["address"] ?: ""
                 val pwHash = call.parameters["pwHash"] ?: error("password must be specified")
-                val user = User(database.getNextUserId(),
-                    name, email, phone, address, pwHash, User.Privilege.User)
+                val user = User(database.getNextUserId(), name, email, phone, address, pwHash, User.Privilege.User)
                 database.addUser(user)
                 call.respond(HttpStatusCode.OK)
             }
@@ -185,7 +184,7 @@ fun Application.userApi(database: Database) {
                     val msg = call.receive<String>().drop(1).dropLast(1).split("|")
                     val user = database.getUserByEmail(msg[0])
                     if (user.password_hash == msg[1]) {
-                        val token = JwtConfig.createAccessToken(user.id)
+                        val token = JwtConfig.createAccessToken(user.id, user.name, user.email, user.privilege.toString())
                         call.respond(token)
                     } else {
                         call.respond(HttpStatusCode.Unauthorized)
