@@ -17,7 +17,6 @@ import utils.browser.PageNavigator
 import utils.exceptions.UnauthorizedException
 
 private val scope = MainScope()
-private var lastID = 0                  //TODO create a viable ID generator
 
 external interface DeviceListProps : Props
 
@@ -61,9 +60,8 @@ val DeviceList = FC<DeviceListProps> {
 
     NewDeviceInput {
         onSubmit = { name, desc ->
-            val device = Device(lastID++, name, desc, true)
             scope.launch {
-                addDevice(device)
+                addDevice(name, desc)
                 deviceList = getDeviceList()
             }
         }
@@ -72,9 +70,9 @@ val DeviceList = FC<DeviceListProps> {
     if (selectedDevice != null){
         ReservationCreateComponent {
             device = selectedDevice
-            onCreateReservation = { reservation ->
+            onCreateReservation = { deviceId, from, to ->
                 scope.launch {
-                    addReservation(reservation)
+                    addReservation(deviceId, 0, from, to) //TODO: get userid from... well, from somewhere.
                 }
             }
         }

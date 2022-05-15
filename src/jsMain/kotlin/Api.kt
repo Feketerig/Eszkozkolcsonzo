@@ -10,7 +10,6 @@ import io.ktor.http.*
 import kotlinx.browser.window
 import model.Device
 import model.Reservation
-import model.User
 import utils.browser.TokenStore
 import utils.exceptions.*
 
@@ -41,11 +40,12 @@ suspend fun deleteDevice(id: Int): Unit {
     }
 }
 
-suspend fun addDevice(device: Device): Unit {
+suspend fun addDevice(name: String, description: String): Unit {
     return jsonClient.post(endpoint + ServerApiPath.devicePath) {
         contentType(ContentType.Application.Json)
         header("Authorization", "Bearer " + TokenStore.get())
-        body = device
+        parameter("name", name)
+        parameter("desc", description)
     }
 }
 
@@ -55,19 +55,26 @@ suspend fun getReservationList(): List<Reservation> {
     }
 }
 
-suspend fun addReservation(reservation: Reservation): Unit {
+suspend fun addReservation(deviceId: Int, userId: Int, from: Long, to: Long): Unit {
     return jsonClient.post(endpoint + ServerApiPath.reservationPath) {
         contentType(ContentType.Application.Json)
         header("Authorization", "Bearer " + TokenStore.get())
-        body = reservation
+        parameter("deviceid", deviceId)
+        parameter("userid", userId)
+        parameter("from", from)
+        parameter("to", to)
     }
 }
 
-suspend fun registerUser(user: User): Unit {
+suspend fun registerUser(name: String, email: String, phone: String, address: String, pwHash: String): Unit {
     return jsonClient.post(endpoint + ServerApiPath.userPath) {
         contentType(ContentType.Application.Json)
         header("Authorization", "Bearer " + TokenStore.get())
-        body = user
+        parameter("name", name)
+        parameter("email", email)
+        parameter("phone", phone)
+        parameter("address", address)
+        parameter("pwHash", pwHash)
     }
 }
 

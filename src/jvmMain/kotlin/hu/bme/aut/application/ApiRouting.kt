@@ -9,6 +9,7 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import model.*
 import utils.path.ServerApiPath
 
 fun Application.deviceApi(database: Database){
@@ -27,7 +28,9 @@ fun Application.deviceApi(database: Database){
                     }
                 }
                 post() {
-                    database.addDevice(call.receive())
+                    val name = call.parameters["name"] ?: error("device must have a name")
+                    val desc = call.parameters["desc"] ?: ""
+                    database.addDevice(Device(database.getNextDeviceId(), name, desc, true))
                     call.respond(HttpStatusCode.OK)
                 }
                 delete("/{id}") {
@@ -72,7 +75,10 @@ fun Application.leaseApi(database: Database) {
                     }
                 }
                 post() {
-                    database.addLease(call.receive())
+                    val resId = call.parameters["resId"]?.toInt() ?: error("reservation id must be specicied")
+                    val kiado = call.parameters["kiado"]?.toInt() ?: error("user id must be specicied")
+                    val atvevo = call.parameters["atvevo"]?.toInt() ?: error("user id must be specicied")
+                    database.addLease(Lease(database.getNextLeaseId(), resId, kiado, atvevo, true))
                     call.respond(HttpStatusCode.OK)
                 }
                 delete("/{id}") {
@@ -117,7 +123,11 @@ fun Application.reservationApi(database: Database) {
                     }
                 }
                 post() {
-                    database.addReservation(call.receive())
+                    val deviceid = call.parameters["deviceid"]?.toInt() ?: error("device must be specified")
+                    val userid = call.parameters["userid"]?.toInt() ?: error("user must be specified")
+                    val from = call.parameters["from"]?.toLong() ?: error("start date must be specified")
+                    val to = call.parameters["to"]?.toLong() ?: error("end date must be specified")
+                    database.addReservation(Reservation(database.getNextReservationId(), deviceid, from, to, userid))
                     call.respond(HttpStatusCode.OK)
                 }
                 delete("/{id}") {
@@ -159,7 +169,14 @@ fun Application.userApi(database: Database) {
         //Authentication not needed
         route(ServerApiPath.userPath) {
             post() {
-                database.addUser(call.receive())
+                val name = call.parameters["name"] ?: error("user name must be specified")
+                val email = call.parameters["email"] ?: error("user name must be specified")
+                val phone = call.parameters["phone"] ?: ""
+                val address = call.parameters["address"] ?: ""
+                val pwHash = call.parameters["pwHash"] ?: error("password must be specified")
+                val user = User(database.getNextUserId(),
+                    name, email, phone, address, pwHash, User.Privilege.User)
+                database.addUser(user)
                 call.respond(HttpStatusCode.OK)
             }
             post("/login") {

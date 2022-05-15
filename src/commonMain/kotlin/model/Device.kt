@@ -8,4 +8,4 @@ data class Device(
     val name: String,
     val desc: String,
     val available: Boolean
-){}
+)

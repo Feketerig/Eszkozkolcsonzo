@@ -9,10 +9,8 @@ data class User(
     val email: String,
     val phone: String,
     val address: String,
-    val privilege: Privilege,
-
     val password_hash: String,
-    val auth_token: String,
+    val privilege: Privilege,
 ){
     @Serializable
     enum class Privilege{

@@ -2,7 +2,6 @@ package components.reservation
 
 import kotlinx.datetime.Clock
 import model.Device
-import model.Reservation
 import org.w3c.dom.HTMLFormElement
 import org.w3c.dom.HTMLInputElement
 import react.FC
@@ -19,11 +18,9 @@ import react.useState
 import utils.converters.YYYY_MM_DD
 import kotlin.js.Date
 
-private var lastID = 0                  //TODO create a viable ID generator
-
 external interface ReservationCreateProps : Props {
     var device: Device
-    var onCreateReservation: (reservation: Reservation) -> Unit
+    var onCreateReservation: (deviceId: Int, from: Long, to: Long) -> Unit
 }
 
 val ReservationCreateComponent = FC<ReservationCreateProps> { props ->
@@ -41,10 +38,9 @@ val ReservationCreateComponent = FC<ReservationCreateProps> { props ->
 
     val submitHandler: FormEventHandler<HTMLFormElement> = {
         it.preventDefault()
-        val reservation = Reservation(lastID++, props.device.id,
+        props.onCreateReservation(props.device.id,
             Date(startDate).getTime().toLong(),
-            Date(endDate).getTime().toLong(), 0)
-        props.onCreateReservation(reservation)
+            Date(endDate).getTime().toLong())
     }
 
     form {

@@ -2,7 +2,6 @@ package components.user
 
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import model.User
 import react.FC
 import react.Props
 import react.dom.html.ButtonType
@@ -13,7 +12,6 @@ import react.dom.html.ReactHTML.form
 import react.useState
 import registerUser
 import components.LabeledInputField
-import utils.hash.generateAuthToken
 import utils.hash.sha256
 
 private val scope = MainScope()
@@ -60,19 +58,10 @@ val RegisterComponent = FC<RegisterComponentProps> { props ->
 
         onSubmit = {
             it.preventDefault()
-            val user = User(0, name, email, phone, address,
-                User.Privilege.User,
-                password.sha256(),
-                generateAuthToken(name, password)
-            )
-            setName("")
-            setEmail("")
-            setPassword("")
-            setPhone("")
-            setAddress("")
             scope.launch {
-                registerUser(user)
+                registerUser(name, email, phone, address, password.sha256())
                 //TODO log in with new user, and navigate do somewhere. Device list maybe?
+                setName(""); setEmail(""); setPassword(""); setPhone(""); setAddress("")
             }
         }
 

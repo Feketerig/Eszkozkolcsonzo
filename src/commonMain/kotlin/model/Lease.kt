@@ -5,8 +5,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Lease(
     val id: Int,
-    val reservation: Reservation,
-    val kiado: User,
-    val atvevo: User,
+    val reservationId: Int,
+    val handlerUserId: Int,
+    val requesterUserId: Int,
     val active: Boolean
-){}
+)

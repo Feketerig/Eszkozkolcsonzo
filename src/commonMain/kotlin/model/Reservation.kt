@@ -9,4 +9,4 @@ data class Reservation(
     val startDate: Long,
     val endDate: Long,
     val userId: Int
-){}
+)
