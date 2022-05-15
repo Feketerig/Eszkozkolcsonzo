@@ -12,6 +12,9 @@ import react.dom.html.ReactHTML.form
 import react.useState
 import registerUser
 import components.LabeledInputField
+import kotlinx.coroutines.async
+import loginAsUser
+import utils.browser.PageNavigator
 import utils.hash.sha256
 
 private val scope = MainScope()
@@ -59,9 +62,14 @@ val RegisterComponent = FC<RegisterComponentProps> { props ->
         onSubmit = {
             it.preventDefault()
             scope.launch {
-                registerUser(name, email, phone, address, password.sha256())
-                //TODO log in with new user, and navigate do somewhere. Device list maybe?
-                setName(""); setEmail(""); setPassword(""); setPhone(""); setAddress("")
+                try {
+                    async { registerUser(name, email, phone, address, password.sha256()) }.await()
+                    async { loginAsUser(email, password.sha256()) }.await()
+                    setName(""); setEmail(""); setPassword(""); setPhone(""); setAddress("")
+                    PageNavigator.toDevices()
+                } catch (e: Exception) {
+                    //TODO: handle unsuccessful registration
+                }
             }
         }
 
