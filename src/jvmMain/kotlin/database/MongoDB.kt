@@ -1,5 +1,6 @@
 package database
 
+import kotlinx.serialization.Serializable
 import model.Device
 import model.Lease
 import model.Reservation
@@ -16,11 +17,11 @@ class MongoDB(
     private val users = database.getCollection<User>()
     private val ids = database.getCollection<IdPair>()
 
-    override suspend fun getNextGlobalId(): Int {
-        val nextID = (ids.findOne(IdPair::name eq IdPair.global_id)?.id ?: 0) + 1
-        ids.updateOne(IdPair::name eq IdPair.global_id, setValue(IdPair::id, nextID), upsert())
-        return nextID
-    }
+    override suspend fun getNextId(): Int = getIdForType(IdPair.IdType.GLOBAL)
+    override suspend fun getNextDeviceId(): Int = getIdForType(IdPair.IdType.DEVICE)
+    override suspend fun getNextReservationId(): Int = getIdForType(IdPair.IdType.RESERVATION)
+    override suspend fun getNextLeaseId(): Int = getIdForType(IdPair.IdType.LEASE)
+    override suspend fun getNextUserId(): Int = getIdForType(IdPair.IdType.USER)
 
     override suspend fun getAllDevices(): List<Device> = devices.find().toList()
 
@@ -96,11 +97,18 @@ class MongoDB(
         return users.findOneById(userId) ?: throw WrongIdException()
     }
 
-    @kotlinx.serialization.Serializable
-    private data class IdPair(val name: String, val id: Int){
-        companion object {
-            val global_id = "GLOBAL"
+    @Serializable
+    private data class IdPair(val type: IdType, val id: Int){
+        @Serializable
+        enum class IdType{
+            GLOBAL, DEVICE, LEASE, RESERVATION, USER
         }
+    }
+
+    private suspend fun getIdForType(type: IdPair.IdType): Int {
+        val nextID = (ids.findOne(IdPair::type eq type)?.id ?: 0) + 1
+        ids.updateOne(IdPair::type eq type, setValue(IdPair::id, nextID), upsert())
+        return nextID
     }
 }
 

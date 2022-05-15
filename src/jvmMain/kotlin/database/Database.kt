@@ -7,7 +7,11 @@ import model.User
 
 interface Database {
 
-    suspend fun getNextGlobalId(): Int
+    suspend fun getNextId(): Int
+    suspend fun getNextDeviceId(): Int
+    suspend fun getNextReservationId(): Int
+    suspend fun getNextLeaseId(): Int
+    suspend fun getNextUserId(): Int
 
     suspend fun getAllDevices(): List<Device>
 
