@@ -15,19 +15,8 @@ import utils.path.ServerApiPath
 
 fun Application.deviceApi(database: Database){
     routing {
-        authenticate {
+        authenticate("req-handler-jwt") { // Handler privilege required
             route(ServerApiPath.devicePath) {
-                get() {
-                    call.respond(database.getAllDevices())
-                }
-                get("/{id}") {
-                    try {
-                        val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
-                        call.respond(database.getDevice(id))
-                    } catch (e: WrongIdException) {
-                        call.respond(HttpStatusCode.NotFound)
-                    }
-                }
                 post() {
                     val name = call.parameters["name"] ?: error("device must have a name")
                     val desc = call.parameters["desc"] ?: ""
@@ -39,6 +28,20 @@ fun Application.deviceApi(database: Database){
                     database.deleteDevice(id)
                     call.respond(HttpStatusCode.OK)
                 }
+                authenticate("basic-jwt") { // Being a user is enough
+                    get() {
+                        call.respond(database.getAllDevices())
+                    }
+                    get("/{id}") {
+                        try {
+                            val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
+                            call.respond(database.getDevice(id))
+                        } catch (e: WrongIdException) {
+                            call.respond(HttpStatusCode.NotFound)
+                        }
+                    }
+
+                }
             }
         }
     }
@@ -46,27 +49,8 @@ fun Application.deviceApi(database: Database){
 
 fun Application.leaseApi(database: Database) {
     routing {
-        authenticate {
+        authenticate("req-handler-jwt") { // Handler privilege required
             route(ServerApiPath.leasePath) {
-                get() {
-                    call.respond(database.getActiveLeases())
-                }
-                get("/{id}") {
-                    try {
-                        val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
-                        call.respond(database.getLease(id))
-                    } catch (e: WrongIdException) {
-                        call.respond(HttpStatusCode.NotFound)
-                    }
-                }
-                get("/reservation/{id}") {
-                    try {
-                        val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
-                        call.respond(database.getLeaseIdByReservationId(id))
-                    } catch (e: WrongIdException) {
-                        call.respond(HttpStatusCode.NotFound)
-                    }
-                }
                 put("/{id}") {
                     try {
                         val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
@@ -87,6 +71,27 @@ fun Application.leaseApi(database: Database) {
                     database.deleteLease(id)
                     call.respond(HttpStatusCode.OK)
                 }
+                authenticate("basic-jwt") { // Being a user is enough
+                    get() {
+                        call.respond(database.getActiveLeases())
+                    }
+                    get("/{id}") {
+                        try {
+                            val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
+                            call.respond(database.getLease(id))
+                        } catch (e: WrongIdException) {
+                            call.respond(HttpStatusCode.NotFound)
+                        }
+                    }
+                    get("/reservation/{id}") {
+                        try {
+                            val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
+                            call.respond(database.getLeaseIdByReservationId(id))
+                        } catch (e: WrongIdException) {
+                            call.respond(HttpStatusCode.NotFound)
+                        }
+                    }
+                }
             }
         }
     }
@@ -94,7 +99,7 @@ fun Application.leaseApi(database: Database) {
 
 fun Application.reservationApi(database: Database) {
     routing {
-        authenticate {
+        authenticate("basic-jwt") {
             route(ServerApiPath.reservationPath) {
                 get() {
                     call.respond(database.getAllReservations())
@@ -141,9 +146,9 @@ fun Application.reservationApi(database: Database) {
     }
 }
 
-fun Application.userApi(database: Database) {
+fun Application.userApi(database: Database) {  // Handler privilege required
     routing {
-        authenticate {
+        authenticate("req-handler-jwt") {
             route(ServerApiPath.userPath) {
                 get() {
                     val email = call.request.queryParameters["email"] ?: error("Invalid username")

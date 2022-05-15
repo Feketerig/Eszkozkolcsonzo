@@ -14,6 +14,6 @@ data class User(
 ){
     @Serializable
     enum class Privilege{
-        Admin, User
+        Admin, Handler, User
     }
 }
