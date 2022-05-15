@@ -85,6 +85,10 @@ class MongoDB(
         return users.findOne(User::email eq email) ?: throw WrongIdException()
     }
 
+    override suspend fun emailAlreadyExists(email: String): Boolean {
+        return users.findOne(User::email eq email) != null
+    }
+
     override suspend fun addUser(user: User) {
         users.insertOne(user)
     }

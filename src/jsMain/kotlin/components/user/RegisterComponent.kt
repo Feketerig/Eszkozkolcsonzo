@@ -14,7 +14,9 @@ import registerUser
 import components.LabeledInputField
 import kotlinx.coroutines.async
 import loginAsUser
+import react.dom.html.ReactHTML.p
 import utils.browser.PageNavigator
+import utils.exceptions.ConflictException
 import utils.hash.sha256
 
 private val scope = MainScope()
@@ -27,6 +29,7 @@ val RegisterComponent = FC<RegisterComponentProps> { props ->
     val (name, setName) = useState("")
     val (phone, setPhone) = useState("")
     val (address, setAddress) = useState("")
+    val (message, setMessage) = useState("")
 
     form {
         div {
@@ -59,6 +62,10 @@ val RegisterComponent = FC<RegisterComponentProps> { props ->
             }
         }
 
+        p {
+            +message
+        }
+
         onSubmit = {
             it.preventDefault()
             scope.launch {
@@ -66,9 +73,10 @@ val RegisterComponent = FC<RegisterComponentProps> { props ->
                     async { registerUser(name, email, phone, address, password.sha256()) }.await()
                     async { loginAsUser(email, password.sha256()) }.await()
                     setName(""); setEmail(""); setPassword(""); setPhone(""); setAddress("")
+                    setMessage("")
                     PageNavigator.toDevices()
-                } catch (e: Exception) {
-                    //TODO: handle unsuccessful registration
+                } catch (e: ConflictException) {
+                    setMessage("Ez az email cím már foglalt!")
                 }
             }
         }

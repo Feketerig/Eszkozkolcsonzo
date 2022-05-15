@@ -49,6 +49,8 @@ interface Database {
 
     suspend fun getUserByEmail(email: String): User
 
+    suspend fun emailAlreadyExists(email: String): Boolean
+
     suspend fun addUser(user: User)
 
     suspend fun getUserNameById(userId: Int): String

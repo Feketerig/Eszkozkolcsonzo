@@ -170,14 +170,22 @@ fun Application.userApi(database: Database) {
         //Authentication not needed
         route(ServerApiPath.userPath) {
             post() {
-                val name = call.parameters["name"] ?: error("user name must be specified")
-                val email = call.parameters["email"] ?: error("user name must be specified")
-                val phone = call.parameters["phone"] ?: ""
-                val address = call.parameters["address"] ?: ""
-                val pwHash = call.parameters["pwHash"] ?: error("password must be specified")
-                val user = User(database.getNextUserId(), name, email, phone, address, pwHash, User.Privilege.User)
-                database.addUser(user)
-                call.respond(HttpStatusCode.OK)
+                try {
+                    val name = call.parameters["name"] ?: error("user name must be specified")
+                    val email = call.parameters["email"] ?: error("user name must be specified")
+                    val phone = call.parameters["phone"] ?: error("user phone must be specified")
+                    val address = call.parameters["address"] ?: error("user address must be specified")
+                    val pwHash = call.parameters["pwHash"] ?: error("password must be specified")
+                    if (!database.emailAlreadyExists(email)){
+                        val user = User(database.getNextUserId(), name, email, phone, address, pwHash, User.Privilege.User)
+                        database.addUser(user)
+                        call.respond(HttpStatusCode.OK)
+                    } else {
+                        call.respond(HttpStatusCode.Conflict)
+                    }
+                } catch (e: IllegalStateException) {
+                    call.respond(HttpStatusCode.PreconditionFailed)
+                }
             }
             post("/login") {
                 try {

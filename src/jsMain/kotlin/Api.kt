@@ -25,6 +25,8 @@ val jsonClient = HttpClient {
                 HttpStatusCode.Forbidden -> throw ForbiddenException()
                 HttpStatusCode.InternalServerError -> throw ServerErrorException()
                 HttpStatusCode.NotFound -> throw NotFoundException()
+                HttpStatusCode.Conflict -> throw ConflictException()
+                HttpStatusCode.PreconditionFailed -> throw  PreconditionFailedException()
                 else -> throw Exception("Unknown error + ${exception.response.status.value}")
             }
         }
