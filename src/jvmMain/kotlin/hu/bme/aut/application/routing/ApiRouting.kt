@@ -1,11 +1,6 @@
 package hu.bme.aut.application.routing
 
-import backend.Devices
-import backend.Leases
-import backend.Reservations
-import backend.Success
-import database.Database
-import database.WrongIdException
+import backend.*
 import hu.bme.aut.application.routing.utils.requireAccessLevel
 import hu.bme.aut.application.security.JwtConfig
 import hu.bme.aut.application.security.UserAuthPrincipal
@@ -158,28 +153,35 @@ fun Application.reservationApi(reservations: Reservations) {
     }
 }
 
-fun Application.userApi(database: Database) {  // Handler privilege required
+fun Application.userApi(users: Users) {
     routing {
-        authenticate("req-handler-jwt") {
+        authenticate("basic-jwt") {
             route(ServerApiPath.userPath) {
                 get() {
-                    val email = call.request.queryParameters["email"] ?: error("Invalid username")
-                    call.respond(database.getUserByEmail(email))
+                    requireAccessLevel(User.Privilege.Handler) {
+                        val email = call.request.queryParameters["email"] ?: error("Invalid username")
+                        when (val result = users.getUserByEmail(email)) {
+                            is Success -> call.respond(result.result)
+                            else -> call.respond(HttpStatusCode.NotFound)
+                        }
+                    }
                 }
                 get("/{id}") {
-                    try {
+                    requireAccessLevel(User.Privilege.Handler) {
                         val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
-                        call.respond(database.getUserById(id))
-                    } catch (e: WrongIdException) {
-                        call.respond(HttpStatusCode.NotFound)
+                        when (val result = users.getUserById(id)) {
+                            is Success -> call.respond(result.result)
+                            else -> call.respond(HttpStatusCode.NotFound)
+                        }
                     }
                 }
                 get("/{id}/name") {
-                    try {
+                    requireAccessLevel(User.Privilege.Handler) {
                         val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
-                        call.respond(database.getUserNameById(id))
-                    } catch (e: WrongIdException) {
-                        call.respond(HttpStatusCode.NotFound)
+                        when (val result = users.getUserNameById(id)) {
+                            is Success -> call.respond(result.result)
+                            else -> call.respond(HttpStatusCode.NotFound)
+                        }
                     }
                 }
             }
@@ -187,34 +189,32 @@ fun Application.userApi(database: Database) {  // Handler privilege required
         //Authentication not needed
         route(ServerApiPath.userPath) {
             post() {
-                try {
-                    val name = call.parameters["name"] ?: error("user name must be specified")
-                    val email = call.parameters["email"] ?: error("user name must be specified")
-                    val phone = call.parameters["phone"] ?: error("user phone must be specified")
-                    val address = call.parameters["address"] ?: error("user address must be specified")
-                    val pwHash = call.parameters["pwHash"] ?: error("password must be specified")
-                    if (!database.emailAlreadyExists(email)){
-                        val user = User(database.getNextUserId(), name, email, phone, address, pwHash, User.Privilege.User)
-                        database.addUser(user)
-                        call.respond(HttpStatusCode.OK)
-                    } else {
-                        call.respond(HttpStatusCode.Conflict)
-                    }
-                } catch (e: IllegalStateException) {
-                    call.respond(HttpStatusCode.PreconditionFailed)
+                val name = call.parameters["name"] ?: error("user name must be specified")
+                val email = call.parameters["email"] ?: error("user name must be specified")
+                val phone = call.parameters["phone"] ?: error("user phone must be specified")
+                val address = call.parameters["address"] ?: error("user address must be specified")
+                val pwHash = call.parameters["pwHash"] ?: error("password must be specified")
+
+                val emailAvailable: Boolean = (users.emailAlreadyExists(email) as Success).result.not()
+                if (emailAvailable){
+                    users.addUser(name, email, phone, address, pwHash, User.Privilege.User)
+                    call.respond(HttpStatusCode.OK)
+                } else {
+                    call.respond(HttpStatusCode.Conflict)
                 }
             }
             post("/login") {
-                try {
-                    val msg = call.receive<String>().drop(1).dropLast(1).split("|")
-                    val user = database.getUserByEmail(msg[0])
+                val msg = call.receive<String>().drop(1).dropLast(1).split("|")
+                val result = users.getUserByEmail(msg[0])
+                if (result is Success) {
+                    val user = result.result
                     if (user.password_hash == msg[1]) {
                         val token = JwtConfig.createAccessToken(user.id, user.name, user.email, user.privilege.toString())
                         call.respond(token)
                     } else {
                         call.respond(HttpStatusCode.Unauthorized)
                     }
-                } catch (e: WrongIdException) {
+                } else {
                     call.respond(HttpStatusCode.NotFound)
                 }
             }

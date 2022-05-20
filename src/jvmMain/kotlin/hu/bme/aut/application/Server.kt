@@ -36,7 +36,7 @@ fun main() {
             deviceApi(getDeviceBackend(mongoDB))
             leaseApi(getLeaseBackend(mongoDB))
             reservationApi(getReservationBackend(mongoDB))
-            userApi(mongoDB)
+            userApi(getUserBackend(mongoDB))
 
             pages()
 
