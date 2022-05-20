@@ -1,6 +1,6 @@
 package hu.bme.aut.application
 
-import backend.getDeviceBackend
+import backend.*
 import database.MongoDB
 import hu.bme.aut.application.routing.*
 import hu.bme.aut.application.security.configureSecurity
@@ -34,7 +34,7 @@ fun main() {
         configureSecurity()
         install(Routing) {
             deviceApi(getDeviceBackend(mongoDB))
-            leaseApi(mongoDB)
+            leaseApi(getLeaseBackend(mongoDB))
             reservationApi(mongoDB)
             userApi(mongoDB)
 

@@ -1,6 +1,7 @@
 package hu.bme.aut.application.routing
 
 import backend.Devices
+import backend.Leases
 import backend.Success
 import database.Database
 import database.WrongIdException
@@ -19,6 +20,8 @@ import model.Reservation
 import model.User
 import utils.path.ServerApiPath
 
+//TODO all these error() calls should be checked
+
 fun Application.deviceApi(devices: Devices){
     routing {
         authenticate("basic-jwt") {
@@ -32,7 +35,7 @@ fun Application.deviceApi(devices: Devices){
                     }
                 }
                 delete("/{id}") {
-                    requireAccessLevel(User.Privilege.Handler){
+                    requireAccessLevel(User.Privilege.Handler) {
                         val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
                         when (devices.deleteDevice(id)) {
                             is Success -> call.respond(HttpStatusCode.OK)
@@ -49,56 +52,57 @@ fun Application.deviceApi(devices: Devices){
                         is Success -> call.respond(result.result)
                         else -> call.respond(HttpStatusCode.NotFound)
                     }
-
                 }
             }
         }
     }
 }
 
-fun Application.leaseApi(database: Database) {
+fun Application.leaseApi(leases: Leases) {
     routing {
-        authenticate("req-handler-jwt") { // Handler privilege required
+        authenticate("basic-jwt") {
             route(ServerApiPath.leasePath) {
                 put("/{id}") {
-                    try {
+                    requireAccessLevel(User.Privilege.Handler) {
                         val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
-                        database.deactivateLease(id)
-                    } catch (e: WrongIdException) {
-                        call.respond(HttpStatusCode.NotFound)
+                        leases.deactivateLease(id)
+                        call.respond(HttpStatusCode.OK)
                     }
                 }
                 post() {
-                    val resId = call.parameters["resId"]?.toInt() ?: error("reservation id must be specicied")
-                    val kiado = call.parameters["kiado"]?.toInt() ?: error("user id must be specicied")
-                    val atvevo = call.parameters["atvevo"]?.toInt() ?: error("user id must be specicied")
-                    database.addLease(Lease(database.getNextLeaseId(), resId, kiado, atvevo, true))
-                    call.respond(HttpStatusCode.OK)
+                    requireAccessLevel(User.Privilege.Handler) {
+                        val resId = call.parameters["resId"]?.toInt() ?: error("reservation id must be specicied")
+                        val kiado = call.parameters["kiado"]?.toInt() ?: error("user id must be specicied")
+                        val atvevo = call.parameters["atvevo"]?.toInt() ?: error("user id must be specicied")
+                        leases.addLease(resId, kiado, atvevo)
+                        call.respond(HttpStatusCode.OK)
+                    }
                 }
                 delete("/{id}") {
-                    val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
-                    database.deleteLease(id)
-                    call.respond(HttpStatusCode.OK)
+                    requireAccessLevel(User.Privilege.Handler) {
+                        val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
+                        when (leases.deleteLease(id)) {
+                            is Success -> call.respond(HttpStatusCode.OK)
+                            else -> call.respond(HttpStatusCode.NotFound)
+                        }
+                    }
                 }
-                authenticate("basic-jwt") { // Being a user is enough
-                    get() {
-                        call.respond(database.getActiveLeases())
+                get() {
+                    call.respond((leases.getActiveLeases() as Success<List<Lease>>).result)
+                }
+                get("/{id}") {
+                    val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
+                    when (val result = leases.getLease(id)) {
+                        is Success -> call.respond(result.result)
+                        else -> call.respond(HttpStatusCode.NotFound)
                     }
-                    get("/{id}") {
-                        try {
-                            val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
-                            call.respond(database.getLease(id))
-                        } catch (e: WrongIdException) {
-                            call.respond(HttpStatusCode.NotFound)
-                        }
-                    }
-                    get("/reservation/{id}") {
-                        try {
-                            val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
-                            call.respond(database.getLeaseIdByReservationId(id))
-                        } catch (e: WrongIdException) {
-                            call.respond(HttpStatusCode.NotFound)
-                        }
+
+                }
+                get("/reservation/{id}") {
+                    val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
+                    when (val result = leases.getLeaseIdByReservationId(id)) {
+                        is Success -> call.respond(result.result)
+                        else -> call.respond(HttpStatusCode.NotFound)
                     }
                 }
             }

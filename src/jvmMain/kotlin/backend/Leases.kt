@@ -1,35 +1,52 @@
 package backend
 
 import database.Database
+import database.WrongIdException
 import model.Lease
 
 class Leases(private val database: Database) {
 
     suspend fun getActiveLeases(): Result<List<Lease>> {
-        TODO()
+        return Success(database.getActiveLeases())
     }
 
     suspend fun getLease(id: Int): Result<Lease> {
-        TODO()
+        return try {
+            Success(database.getLease(id))
+        } catch (e: WrongIdException) {
+            Error(e)
+        }
     }
 
-    suspend fun addLease(lease: Lease): Result<Unit> {
-        TODO()
+    suspend fun addLease(reservationId: Int, kiado: Int, atvevo: Int): Result<Unit> {
+        database.addLease(Lease(database.getNextLeaseId(), reservationId, kiado, atvevo, true))
+        return Success(Unit)
     }
 
     suspend fun deleteLease(id: Int): Result<Unit> {
-        TODO()
+        return try {
+            database.deleteLease(id)
+            Success(Unit)
+        } catch (e: WrongIdException) {
+            Error(e)
+        }
     }
 
     suspend fun activateLease(id: Int): Result<Unit> {
-        TODO()
+        database.activateLease(id)
+        return Success(Unit)
     }
 
     suspend fun deactivateLease(id: Int): Result<Unit> {
-        TODO()
+        database.deactivateLease(id)
+        return Success(Unit)
     }
 
     suspend fun getLeaseIdByReservationId(id: Int): Result<Int> {
-        TODO()
+        return try {
+            Success(database.getLeaseIdByReservationId(id))
+        } catch (e: WrongIdException) {
+            Error(e)
+        }
     }
 }
