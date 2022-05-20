@@ -1,4 +1,4 @@
-import utils.path.ServerApiPath
+
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.features.*
@@ -12,6 +12,7 @@ import model.Device
 import model.Reservation
 import utils.browser.TokenStore
 import utils.exceptions.*
+import utils.path.ServerApiPath
 
 val endpoint = window.location.origin
 
@@ -26,7 +27,6 @@ val jsonClient = HttpClient {
                 HttpStatusCode.InternalServerError -> throw ServerErrorException()
                 HttpStatusCode.NotFound -> throw NotFoundException()
                 HttpStatusCode.Conflict -> throw ConflictException()
-                HttpStatusCode.PreconditionFailed -> throw  PreconditionFailedException()
                 else -> throw Exception("Unknown error + ${exception.response.status.value}")
             }
         }
