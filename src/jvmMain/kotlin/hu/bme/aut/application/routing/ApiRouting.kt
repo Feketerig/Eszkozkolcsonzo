@@ -2,6 +2,7 @@ package hu.bme.aut.application.routing
 
 import backend.Devices
 import backend.Leases
+import backend.Reservations
 import backend.Success
 import database.Database
 import database.WrongIdException
@@ -96,7 +97,6 @@ fun Application.leaseApi(leases: Leases) {
                         is Success -> call.respond(result.result)
                         else -> call.respond(HttpStatusCode.NotFound)
                     }
-
                 }
                 get("/reservation/{id}") {
                     val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
@@ -110,35 +110,32 @@ fun Application.leaseApi(leases: Leases) {
     }
 }
 
-fun Application.reservationApi(database: Database) {
+fun Application.reservationApi(reservations: Reservations) {
     routing {
         authenticate("basic-jwt") {
             route(ServerApiPath.reservationPath) {
                 get() {
-                    call.respond(database.getAllReservations())
+                    call.respond((reservations.getAllReservations() as Success<List<Reservation>>).result)
                 }
                 get("/{id}") {
-                    try {
-                        val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
-                        call.respond(database.getReservation(id))
-                    } catch (e: WrongIdException) {
-                        call.respond(HttpStatusCode.NotFound)
+                    val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
+                    when (val result = reservations.getReservation(id)) {
+                        is Success -> call.respond(result.result)
+                        else -> call.respond(HttpStatusCode.NotFound)
                     }
                 }
                 get("/user/{id}") {
-                    try {
-                        val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
-                        call.respond(database.getAllReservationByUserId(id))
-                    } catch (e: WrongIdException) {
-                        call.respond(HttpStatusCode.NotFound)
+                    val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
+                    when (val result = reservations.getAllReservationByUserId(id)) {
+                        is Success -> call.respond(result.result)
+                        else -> call.respond(HttpStatusCode.NotFound)
                     }
                 }
                 get("/device/{id}") {
-                    try {
-                        val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
-                        call.respond(database.getReservationByDeviceId(id))
-                    } catch (e: WrongIdException) {
-                        call.respond(HttpStatusCode.NotFound)
+                    val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
+                    when (val result = reservations.getReservationByDeviceId(id)) {
+                        is Success -> call.respond(result.result)
+                        else -> call.respond(HttpStatusCode.NotFound)
                     }
                 }
                 post() {
@@ -146,13 +143,15 @@ fun Application.reservationApi(database: Database) {
                     val userid = (call.authentication.principal as UserAuthPrincipal).id
                     val from = call.parameters["from"]?.toLong() ?: error("start date must be specified")
                     val to = call.parameters["to"]?.toLong() ?: error("end date must be specified")
-                    database.addReservation(Reservation(database.getNextReservationId(), deviceid, from, to, userid))
+                    reservations.addReservation(deviceid, from, to, userid)
                     call.respond(HttpStatusCode.OK)
                 }
                 delete("/{id}") {
                     val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
-                    database.deleteReservation(id)
-                    call.respond(HttpStatusCode.OK)
+                    when (val result = reservations.deleteReservation(id)) {
+                        is Success -> call.respond(result.result)
+                        else -> call.respond(HttpStatusCode.NotFound)
+                    }
                 }
             }
         }

@@ -35,7 +35,7 @@ fun main() {
         install(Routing) {
             deviceApi(getDeviceBackend(mongoDB))
             leaseApi(getLeaseBackend(mongoDB))
-            reservationApi(mongoDB)
+            reservationApi(getReservationBackend(mongoDB))
             userApi(mongoDB)
 
             pages()

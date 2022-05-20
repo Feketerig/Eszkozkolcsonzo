@@ -1,31 +1,44 @@
 package backend
 
 import database.Database
+import database.WrongIdException
 import model.Reservation
 
 class Reservations(private val database: Database) {
 
     suspend fun getAllReservations(): Result<List<Reservation>> {
-        TODO()
+        return Success(database.getAllReservations())
     }
 
     suspend fun getReservation(id: Int): Result<Reservation> {
-        TODO()
+        return try {
+            Success(database.getReservation(id))
+        } catch (e: WrongIdException) {
+            Error(e)
+        }
     }
 
     suspend fun getAllReservationByUserId(id: Int): Result<List<Reservation>> {
-        TODO()
+        return Success(database.getAllReservationByUserId(id))
     }
 
     suspend fun getReservationByDeviceId(id: Int): Result<Reservation> {
-        TODO()
+        return try {
+            Success(database.getReservationByDeviceId(id))
+        } catch (e: WrongIdException) {
+            Error(e)
+        }
     }
 
-    suspend fun addReservation(reservation: Reservation): Result<Unit> {
-        TODO()
+    suspend fun addReservation(deviceId: Int, from: Long, to: Long, userId: Int): Result<Unit> {
+        return Success(database.addReservation(Reservation(database.getNextReservationId(), deviceId, from, to, userId)))
     }
 
     suspend fun deleteReservation(id: Int): Result<Unit> {
-        TODO()
+        return try {
+            Success(database.deleteReservation(id))
+        } catch (e: WrongIdException) {
+            Error(e)
+        }
     }
 }
