@@ -48,8 +48,7 @@ val ReservationCreateComponent = FC<ReservationCreateProps> { props ->
 
         div {
             +"Eszköz foglalása:"
-
-            +"${props.device.name} \t ${props.device.desc} \t ${props.device.available}"
+            +"${props.device.name} \t ${props.device.desc}" //TODO: check avaibility for selected period
         }
 
         input {

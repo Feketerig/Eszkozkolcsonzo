@@ -42,7 +42,7 @@ val DeviceList = FC<DeviceListProps> {
             DeviceListItem {
                 device = item
 
-                onDelete = { device ->
+                onDelete = { device -> //TODO deleting devices with active reservation should not be possible
                     MainScope().launch {
                         deleteDevice(device.id)
                         if (selectedDevice != null && selectedDevice.id == device.id) {

@@ -34,9 +34,10 @@ val jsonClient = HttpClient {
 }
 
 suspend fun getDeviceList(): List<Device>{
-    return jsonClient.get(endpoint + ServerApiPath.devicePath) {
+    val response: HttpResponse = jsonClient.get(endpoint + ServerApiPath.devicePath) {
         header("Authorization", "Bearer " + TokenStore.get())
     }
+    return response.receive()
 }
 
 suspend fun deleteDevice(id: Int): Unit {

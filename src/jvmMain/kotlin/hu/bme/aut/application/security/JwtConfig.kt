@@ -7,7 +7,7 @@ import java.util.*
 
 
 object JwtConfig {
-    private const val SECRET = "65adff1561fsg6fd51fgf5h61gga1d6fafsd61fgs" //TODO: should be loaded from a config file
+    private const val SECRET = "65adff1561fsg6fd51fgf5h61gga1d6fafsd61fgs" //TODO: should be loaded from a config file https://ktor.io/docs/configurations.html#environment-variables
     private const val ISSUER = "eszkozkolcsonzo-app"
     private const val AUDIENCE = "eszkozkolcsonzo-app"
 
