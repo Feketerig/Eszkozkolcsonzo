@@ -1,4 +1,4 @@
-package hu.bme.aut.application
+package hu.bme.aut.application.routing
 
 import io.ktor.application.*
 import io.ktor.http.*

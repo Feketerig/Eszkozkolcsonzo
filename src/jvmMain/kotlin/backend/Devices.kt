@@ -1,16 +1,21 @@
 package backend
 
 import database.Database
+import database.WrongIdException
 import model.Device
 
 class Devices(private val database: Database) {
 
     suspend fun getAllDevices(): Result<List<Device>> {
-        TODO()
+        return Success(database.getAllDevices())
     }
 
     suspend fun getDevice(id: Int): Result<Device> {
-        TODO()
+        return try {
+            Success(database.getDevice(id))
+        } catch (e: WrongIdException) {
+            Error(e)
+        }
     }
 
     suspend fun addDevice(name: String, desc: String): Result<Unit> {
@@ -19,6 +24,11 @@ class Devices(private val database: Database) {
     }
 
     suspend fun deleteDevice(id: Int): Result<Unit> {
-        TODO()
+        return try {
+            database.deleteDevice(id)
+            Success(Unit)
+        } catch (e: WrongIdException) {
+            Error(e)
+        }
     }
 }

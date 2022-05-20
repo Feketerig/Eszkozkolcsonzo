@@ -1,7 +1,10 @@
-package hu.bme.aut.application
+package hu.bme.aut.application.routing
 
+import backend.Devices
+import backend.Success
 import database.Database
 import database.WrongIdException
+import hu.bme.aut.application.routing.utils.requireAccessLevel
 import hu.bme.aut.application.security.JwtConfig
 import hu.bme.aut.application.security.UserAuthPrincipal
 import io.ktor.application.*
@@ -10,35 +13,41 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
-import model.*
+import model.Device
+import model.Lease
+import model.Reservation
+import model.User
 import utils.path.ServerApiPath
 
-fun Application.deviceApi(database: Database){
+fun Application.deviceApi(devices: Devices){
     routing {
-        authenticate("req-handler-jwt") { // Handler privilege required
+        authenticate("basic-jwt") {
             route(ServerApiPath.devicePath) {
                 post() {
-                    val name = call.parameters["name"] ?: error("device must have a name")
-                    val desc = call.parameters["desc"] ?: ""
-                    database.addDevice(Device(database.getNextDeviceId(), name, desc, true))
-                    call.respond(HttpStatusCode.OK)
+                    requireAccessLevel(User.Privilege.Handler) {
+                        val name = call.parameters["name"] ?: error("device must have a name")
+                        val desc = call.parameters["desc"] ?: ""
+                        devices.addDevice(name, desc)
+                        call.respond(HttpStatusCode.OK)
+                    }
                 }
                 delete("/{id}") {
-                    val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
-                    database.deleteDevice(id)
-                    call.respond(HttpStatusCode.OK)
-                }
-                authenticate("basic-jwt") { // Being a user is enough
-                    get() {
-                        call.respond(database.getAllDevices())
-                    }
-                    get("/{id}") {
-                        try {
-                            val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
-                            call.respond(database.getDevice(id))
-                        } catch (e: WrongIdException) {
-                            call.respond(HttpStatusCode.NotFound)
+                    requireAccessLevel(User.Privilege.Handler){
+                        val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
+                        when (devices.deleteDevice(id)) {
+                            is Success -> call.respond(HttpStatusCode.OK)
+                            else -> call.respond(HttpStatusCode.NotFound)
                         }
+                    }
+                }
+                get() {
+                    call.respond((devices.getAllDevices() as Success<List<Device>>).result)
+                }
+                get("/{id}") {
+                    val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
+                    when (val result = devices.getDevice(id)) {
+                        is Success -> call.respond(result.result)
+                        else -> call.respond(HttpStatusCode.NotFound)
                     }
 
                 }

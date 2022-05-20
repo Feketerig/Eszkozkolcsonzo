@@ -1,6 +1,8 @@
 package hu.bme.aut.application
 
+import backend.getDeviceBackend
 import database.MongoDB
+import hu.bme.aut.application.routing.*
 import hu.bme.aut.application.security.configureSecurity
 import io.ktor.application.*
 import io.ktor.features.*
@@ -31,7 +33,7 @@ fun main() {
         }
         configureSecurity()
         install(Routing) {
-            deviceApi(mongoDB)
+            deviceApi(getDeviceBackend(mongoDB))
             leaseApi(mongoDB)
             reservationApi(mongoDB)
             userApi(mongoDB)
