@@ -1,4 +1,4 @@
-package database
+package hu.bme.aut.application.database
 
 import kotlinx.serialization.Serializable
 import model.Device

@@ -1,7 +1,7 @@
 package hu.bme.aut.application
 
-import backend.*
-import database.MongoDB
+import hu.bme.aut.application.backend.utils.*
+import hu.bme.aut.application.database.MongoDB
 import hu.bme.aut.application.routing.*
 import hu.bme.aut.application.security.configureSecurity
 import io.ktor.application.*

@@ -1,4 +1,4 @@
-package database
+package hu.bme.aut.application.database
 
 import model.Device
 import model.Lease
