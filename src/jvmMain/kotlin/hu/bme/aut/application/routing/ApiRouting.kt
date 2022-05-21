@@ -4,10 +4,7 @@ import hu.bme.aut.application.backend.Devices
 import hu.bme.aut.application.backend.Leases
 import hu.bme.aut.application.backend.Reservations
 import hu.bme.aut.application.backend.Users
-import hu.bme.aut.application.backend.utils.Conflict
-import hu.bme.aut.application.backend.utils.NotFound
-import hu.bme.aut.application.backend.utils.Success
-import hu.bme.aut.application.backend.utils.Unauthorized
+import hu.bme.aut.application.backend.utils.*
 import hu.bme.aut.application.routing.utils.requireAccessLevel
 import hu.bme.aut.application.security.UserAuthPrincipal
 import io.ktor.application.*
@@ -122,27 +119,33 @@ fun Application.reservationApi(reservations: Reservations) {
         authenticate("basic-jwt") {
             route(ServerApiPath.reservationPath) {
                 get() {
-                    call.respond((reservations.getAllReservations() as Success<List<Reservation>>).result)
-                }
-                get("/{id}") {
-                    val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
-                    when (val result = reservations.getReservation(id)) {
-                        is Success -> call.respond(result.result)
-                        is NotFound -> call.respond(HttpStatusCode.NotFound)
-                        else -> call.respond(HttpStatusCode.InternalServerError)
+                    requireAccessLevel(User.Privilege.Handler) {
+                        call.respond((reservations.getAllReservations() as Success<List<Reservation>>).result)
                     }
                 }
-                get("/user/{id}") {
-                    val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
-                    when (val result = reservations.getAllReservationByUserId(id)) {
-                        is Success -> call.respond(result.result)
-                        is NotFound -> call.respond(HttpStatusCode.NotFound)
-                        else -> call.respond(HttpStatusCode.InternalServerError)
+                get("/{id}") {
+                    requireAccessLevel(User.Privilege.Handler) {
+                        val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
+                        when (val result = reservations.getReservation(id)) {
+                            is Success -> call.respond(result.result)
+                            is NotFound -> call.respond(HttpStatusCode.NotFound)
+                            else -> call.respond(HttpStatusCode.InternalServerError)
+                        }
                     }
                 }
                 get("/device/{id}") {
-                    val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
-                    when (val result = reservations.getReservationByDeviceId(id)) {
+                    requireAccessLevel(User.Privilege.Handler) {
+                        val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
+                        when (val result = reservations.getReservationByDeviceId(id)) {
+                            is Success -> call.respond(result.result)
+                            is NotFound -> call.respond(HttpStatusCode.NotFound)
+                            else -> call.respond(HttpStatusCode.InternalServerError)
+                        }
+                    }
+                }
+                get("/user") {
+                    val id = (call.authentication.principal as UserAuthPrincipal).id
+                    when (val result = reservations.getAllReservationByUserId(id)) {
                         is Success -> call.respond(result.result)
                         is NotFound -> call.respond(HttpStatusCode.NotFound)
                         else -> call.respond(HttpStatusCode.InternalServerError)
@@ -161,10 +164,12 @@ fun Application.reservationApi(reservations: Reservations) {
                     }
                 }
                 delete("/{id}") {
+                    val userId = (call.authentication.principal as UserAuthPrincipal).id
                     val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
-                    when (val result = reservations.deleteReservation(id)) {
+                    when (val result = reservations.deleteReservation(id, userId)) {
                         is Success -> call.respond(result.result)
-                        is NotFound -> call.respond(HttpStatusCode.NotFound)
+                        is NotFound -> call.respond(HttpStatusCode.NotFound, result.id)
+                        is Forbidden -> call.respond(HttpStatusCode.Forbidden)
                         else -> call.respond(HttpStatusCode.InternalServerError)
                     }
                 }

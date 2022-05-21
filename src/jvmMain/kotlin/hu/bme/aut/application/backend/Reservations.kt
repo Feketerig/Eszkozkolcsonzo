@@ -1,12 +1,10 @@
 package hu.bme.aut.application.backend
 
-import hu.bme.aut.application.backend.utils.Conflict
-import hu.bme.aut.application.backend.utils.NotFound
-import hu.bme.aut.application.backend.utils.Result
-import hu.bme.aut.application.backend.utils.Success
+import hu.bme.aut.application.backend.utils.*
 import hu.bme.aut.application.database.Database
 import hu.bme.aut.application.database.WrongIdException
 import model.Reservation
+import model.User
 
 class Reservations(private val database: Database) {
 
@@ -49,18 +47,23 @@ class Reservations(private val database: Database) {
         }
     }
 
-    suspend fun deleteReservation(id: Int): Result<Unit> {
-        return if (database.getActiveLeases().none { it.reservationId == id }) {
+    suspend fun deleteReservation(reservationId: Int, userId: Int): Result<Unit> {
+        return if (database.getActiveLeases().none { it.reservationId == reservationId }) {
             try {
-                val deviceId = database.getReservation(id).deviceId
-                database.setDeviceAvailability(deviceId, true)
-                Success(database.deleteReservation(id))
+                val reservation = database.getReservation(reservationId)
+                if (reservation.userId == userId || database.getUserById(userId).privilege != User.Privilege.User) {
+                    database.setDeviceAvailability(reservation.deviceId, true)
+                    Success(database.deleteReservation(reservationId))
+                }
+                else {
+                    Forbidden()
+                }
             } catch (e: WrongIdException) {
-                NotFound(id)
+                NotFound(reservationId)
             }
         }
         else {
-            Conflict("reservation $id is served, and active")
+            Conflict("reservation $reservationId is served, and active")
         }
     }
 }
