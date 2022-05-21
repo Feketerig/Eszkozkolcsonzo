@@ -5,8 +5,11 @@ import model.Device
 import model.Lease
 import model.Reservation
 import model.User
-import org.litote.kmongo.*
 import org.litote.kmongo.coroutine.CoroutineDatabase
+import org.litote.kmongo.div
+import org.litote.kmongo.eq
+import org.litote.kmongo.setValue
+import org.litote.kmongo.upsert
 
 class MongoDB(
     database: CoroutineDatabase
@@ -57,7 +60,7 @@ class MongoDB(
     }
 
     override suspend fun getLeaseIdByReservationId(id: Int): Int {
-        return leases.findOne(Lease::reservationId / Reservation::id eq id)?.id ?: 1
+        return leases.findOne(Lease::reservationId / Reservation::id eq id)?.id ?: throw WrongIdException()
     }
 
     override suspend fun getAllReservations(): List<Reservation> = reservations.find().toList()
