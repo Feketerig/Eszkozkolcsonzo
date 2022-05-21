@@ -28,7 +28,7 @@ val PageHeaderComponent = FC<Props> {
                 navigation = { PageNavigator.toDevices() }
             }
             PageHeaderButton {
-                title = "Foglalások"
+                title = "Foglalásaim"
                 navigation = { PageNavigator.toReservations() }
             }
             PageHeaderButton {
