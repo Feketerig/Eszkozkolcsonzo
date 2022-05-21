@@ -29,7 +29,7 @@ class MongoDB(
     override suspend fun getAllDevices(): List<Device> = devices.find().toList()
 
     override suspend fun getDevice(id: Int): Device =
-        devices.find(Device::id eq id).first() ?: throw WrongIdException()
+        devices.findOne(Device::id eq id) ?: throw WrongIdException()
 
     override suspend fun addDevice(device: Device) {
         devices.insertOne(device)
@@ -45,7 +45,7 @@ class MongoDB(
 
     override suspend fun getActiveLeases(): List<Lease> = leases.find(Lease::active eq true).toList()
 
-    override suspend fun getLease(id: Int): Lease = leases.find(Lease::id eq id).first() ?: throw WrongIdException()
+    override suspend fun getLease(id: Int): Lease = leases.findOne(Lease::id eq id) ?: throw WrongIdException()
 
     override suspend fun addLease(lease: Lease) {
         leases.insertOne(lease)
@@ -70,7 +70,7 @@ class MongoDB(
     override suspend fun getAllReservations(): List<Reservation> = reservations.find().toList()
 
     override suspend fun getReservation(id: Int): Reservation =
-        reservations.find(Reservation::id eq id).first() ?: throw WrongIdException()
+        reservations.findOne(Reservation::id eq id) ?: throw WrongIdException()
 
     override suspend fun getAllReservationByUserId(id: Int): List<Reservation> {
         return reservations.find(Reservation::userId eq id).toList()
@@ -101,11 +101,11 @@ class MongoDB(
     }
 
     override suspend fun getUserNameById(userId: Int): String {
-        return users.findOneById(userId)?.name ?: throw WrongIdException()
+        return users.findOne(User::id eq userId)?.name ?: throw WrongIdException()
     }
 
     override suspend fun getUserById(userId: Int): User {
-        return users.findOneById(userId) ?: throw WrongIdException()
+        return users.findOne(User::id eq userId) ?: throw WrongIdException()
     }
 
     @Serializable
