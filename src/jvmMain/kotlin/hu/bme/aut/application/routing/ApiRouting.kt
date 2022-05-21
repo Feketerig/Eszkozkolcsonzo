@@ -222,7 +222,7 @@ fun Application.userApi(users: Users) {
                 val phone = call.parameters["phone"] ?: error("user phone must be specified")
                 val address = call.parameters["address"] ?: error("user address must be specified")
                 val pwHash = call.parameters["pwHash"] ?: error("password must be specified")
-                when (users.registerUser(name, email, phone, address, pwHash, User.Privilege.User)) {
+                when (users.registerUser(name, email, phone, address, pwHash)) {
                     is Success -> call.respond(HttpStatusCode.OK)
                     is Conflict -> call.respond(HttpStatusCode.Conflict)
                     else -> call.respond(HttpStatusCode.InternalServerError)

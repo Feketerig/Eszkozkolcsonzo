@@ -16,10 +16,9 @@ class Users(private val database: Database) {
         }
     }
 
-    suspend fun registerUser(name: String, email: String, phone: String, address: String,
-                             pwHash: String, privilege: User.Privilege): Result<Unit> {
+    suspend fun registerUser(name: String, email: String, phone: String, address: String, pwHash: String): Result<Unit> {
         return if (database.emailAlreadyExists(email).not()) {
-            Success(database.addUser(User(database.getNextUserId(), name, email, phone, address, pwHash, privilege)))
+            Success(database.addUser(User(database.getNextUserId(), name, email, phone, address, pwHash, User.Privilege.User)))
         } else {
             Conflict("email already exists")
         }
