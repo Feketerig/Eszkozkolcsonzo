@@ -1,9 +1,12 @@
 package hu.bme.aut.application.routing
 
-import hu.bme.aut.application.backend.*
+import hu.bme.aut.application.backend.Devices
+import hu.bme.aut.application.backend.Leases
+import hu.bme.aut.application.backend.Reservations
+import hu.bme.aut.application.backend.Users
 import hu.bme.aut.application.backend.utils.Success
+import hu.bme.aut.application.backend.utils.Unauthorized
 import hu.bme.aut.application.routing.utils.requireAccessLevel
-import hu.bme.aut.application.security.JwtConfig
 import hu.bme.aut.application.security.UserAuthPrincipal
 import io.ktor.application.*
 import io.ktor.auth.*
@@ -195,28 +198,17 @@ fun Application.userApi(users: Users) {
                 val phone = call.parameters["phone"] ?: error("user phone must be specified")
                 val address = call.parameters["address"] ?: error("user address must be specified")
                 val pwHash = call.parameters["pwHash"] ?: error("password must be specified")
-
-                val emailAvailable: Boolean = (users.emailAlreadyExists(email) as Success).result.not()
-                if (emailAvailable){
-                    users.addUser(name, email, phone, address, pwHash, User.Privilege.User)
-                    call.respond(HttpStatusCode.OK)
-                } else {
-                    call.respond(HttpStatusCode.Conflict)
+                when (users.registerUser(name, email, phone, address, pwHash, User.Privilege.User)) {
+                    is Success -> call.respond(HttpStatusCode.OK)
+                    else -> call.respond(HttpStatusCode.Conflict)
                 }
             }
             post("/login") {
                 val msg = call.receive<String>().drop(1).dropLast(1).split("|")
-                val result = users.getUserByEmail(msg[0])
-                if (result is Success) {
-                    val user = result.result
-                    if (user.password_hash == msg[1]) {
-                        val token = JwtConfig.createAccessToken(user.id, user.name, user.email, user.privilege.toString())
-                        call.respond(token)
-                    } else {
-                        call.respond(HttpStatusCode.Unauthorized)
-                    }
-                } else {
-                    call.respond(HttpStatusCode.NotFound)
+                when (val result = users.loginWith(msg[0], msg[1])) {
+                    is Success -> call.respond(result.result)
+                    is Unauthorized -> call.respond(HttpStatusCode.Unauthorized)
+                    else -> call.respond(HttpStatusCode.NotFound)
                 }
             }
         }

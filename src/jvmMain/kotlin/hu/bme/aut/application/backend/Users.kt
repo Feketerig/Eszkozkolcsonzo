@@ -1,10 +1,9 @@
 package hu.bme.aut.application.backend
 
-import hu.bme.aut.application.backend.utils.Error
-import hu.bme.aut.application.backend.utils.Result
-import hu.bme.aut.application.backend.utils.Success
+import hu.bme.aut.application.backend.utils.*
 import hu.bme.aut.application.database.Database
 import hu.bme.aut.application.database.WrongIdException
+import hu.bme.aut.application.security.JwtConfig
 import model.User
 
 class Users(private val database: Database) {
@@ -17,13 +16,14 @@ class Users(private val database: Database) {
         }
     }
 
-    suspend fun emailAlreadyExists(email: String): Result<Boolean> {
-        return Success(database.emailAlreadyExists(email))
-    }
-
-    suspend fun addUser(name: String, email: String, phone: String, address: String,
-                        pwHash: String, privilege: User.Privilege): Result<Unit> {
-        return Success(database.addUser(User(database.getNextUserId(), name, email, phone, address, pwHash, privilege)))
+    suspend fun registerUser(name: String, email: String, phone: String, address: String,
+                             pwHash: String, privilege: User.Privilege): Result<Unit> {
+        return if (database.emailAlreadyExists(email).not()){
+            database.addUser(User(database.getNextUserId(), name, email, phone, address, pwHash, privilege))
+            Success(Unit)
+        } else {
+            Conflict("email")
+        }
     }
 
     suspend fun getUserNameById(userId: Int): Result<String> {
@@ -37,6 +37,20 @@ class Users(private val database: Database) {
     suspend fun getUserById(userId: Int): Result<User> {
         return try {
             Success(database.getUserById(userId))
+        } catch (e: WrongIdException) {
+            Error(e)
+        }
+    }
+
+    suspend fun loginWith(email: String, pwHash: String): Result<String> {
+        return try {
+            val user = database.getUserByEmail(email)
+            if (user.password_hash == pwHash) {
+                val token = JwtConfig.createAccessToken(user.id, user.name, user.email, user.privilege.toString())
+                Success(token)
+            } else {
+                Unauthorized()
+            }
         } catch (e: WrongIdException) {
             Error(e)
         }
