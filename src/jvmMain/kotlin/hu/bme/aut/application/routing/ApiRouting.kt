@@ -41,6 +41,7 @@ fun Application.deviceApi(devices: Devices){
                         val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
                         when (devices.deleteDevice(id)) {
                             is Success -> call.respond(HttpStatusCode.OK)
+                            is Conflict -> call.respond(HttpStatusCode.Conflict)
                             is NotFound -> call.respond(HttpStatusCode.NotFound)
                             else -> call.respond(HttpStatusCode.InternalServerError)
                         }

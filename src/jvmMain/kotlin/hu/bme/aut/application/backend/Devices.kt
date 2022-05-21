@@ -1,5 +1,6 @@
 package hu.bme.aut.application.backend
 
+import hu.bme.aut.application.backend.utils.Conflict
 import hu.bme.aut.application.backend.utils.NotFound
 import hu.bme.aut.application.backend.utils.Result
 import hu.bme.aut.application.backend.utils.Success
@@ -27,7 +28,10 @@ class Devices(private val database: Database) {
 
     suspend fun deleteDevice(id: Int): Result<Unit> {
         return try {
-            Success(database.deleteDevice(id))
+            if (database.getDevice(id).available)
+                Success(database.deleteDevice(id))
+            else
+                Conflict("device is reserved, cannot be deleted")
         } catch (e: Exception) {
             NotFound(id)
         }

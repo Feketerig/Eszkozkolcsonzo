@@ -5,6 +5,7 @@ import addReservation
 import components.reservation.ReservationCreateComponent
 import deleteDevice
 import getDeviceList
+import kotlinx.browser.window
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import model.Device
@@ -14,6 +15,7 @@ import react.dom.html.ReactHTML.ul
 import react.useEffectOnce
 import react.useState
 import utils.browser.PageNavigator
+import utils.exceptions.ConflictException
 import utils.exceptions.UnauthorizedException
 
 private val scope = MainScope()
@@ -42,9 +44,13 @@ val DeviceList = FC<DeviceListProps> {
             DeviceListItem {
                 device = item
 
-                onDelete = { device -> //TODO deleting devices with active reservation should not be possible
+                onDelete = { device ->
                     MainScope().launch {
-                        deleteDevice(device.id)
+                        try {
+                            deleteDevice(device.id)
+                        } catch (e: ConflictException) {
+                            window.alert("This device is reserved, can not be deleted")
+                        }
                         if (selectedDevice != null && selectedDevice.id == device.id) {
                             setSelected(null)
                         }
