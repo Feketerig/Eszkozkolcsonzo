@@ -39,6 +39,10 @@ class MongoDB(
         devices.deleteOne(Device::id eq id)
     }
 
+    override suspend fun setDeviceAvailability(id: Int, availability: Boolean) {
+        devices.updateOne(Device::id eq id, setValue(Device::available, availability))
+    }
+
     override suspend fun getActiveLeases(): List<Lease> = leases.find(Lease::active eq true).toList()
 
     override suspend fun getLease(id: Int): Lease = leases.find(Lease::id eq id).first() ?: throw WrongIdException()
@@ -52,11 +56,11 @@ class MongoDB(
     }
 
     override suspend fun activateLease(id: Int) {
-        leases.updateOne(Lease::id eq id, Lease::active eq true)
+        leases.updateOne(Lease::id eq id, setValue(Lease::active, true))
     }
 
     override suspend fun deactivateLease(id: Int) {
-        leases.updateOne(Lease::id eq id, Lease::active eq false)
+        leases.updateOne(Lease::id eq id, setValue(Lease::active, false))
     }
 
     override suspend fun getLeaseIdByReservationId(id: Int): Int {

@@ -153,8 +153,12 @@ fun Application.reservationApi(reservations: Reservations) {
                     val userid = (call.authentication.principal as UserAuthPrincipal).id
                     val from = call.parameters["from"]?.toLong() ?: error("start date must be specified")
                     val to = call.parameters["to"]?.toLong() ?: error("end date must be specified")
-                    reservations.addReservation(deviceid, from, to, userid)
-                    call.respond(HttpStatusCode.OK)
+                    when (val result = reservations.addReservation(deviceid, from, to, userid)) {
+                        is Success -> call.respond(HttpStatusCode.OK)
+                        is Conflict -> call.respond(HttpStatusCode.Conflict, result.reason)
+                        is NotFound -> call.respond(HttpStatusCode.NotFound, result.id)
+                        else -> call.respond(HttpStatusCode.InternalServerError)
+                    }
                 }
                 delete("/{id}") {
                     val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")

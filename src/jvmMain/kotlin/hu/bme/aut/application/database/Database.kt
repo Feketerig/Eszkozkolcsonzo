@@ -21,6 +21,8 @@ interface Database {
 
     suspend fun deleteDevice(id: Int)
 
+    suspend fun setDeviceAvailability(id: Int, availability: Boolean)
+
     suspend fun getActiveLeases(): List<Lease>
 
     suspend fun getLease(id: Int): Lease

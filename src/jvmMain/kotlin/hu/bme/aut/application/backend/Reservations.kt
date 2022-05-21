@@ -1,5 +1,6 @@
 package hu.bme.aut.application.backend
 
+import hu.bme.aut.application.backend.utils.Conflict
 import hu.bme.aut.application.backend.utils.NotFound
 import hu.bme.aut.application.backend.utils.Result
 import hu.bme.aut.application.backend.utils.Success
@@ -34,14 +35,32 @@ class Reservations(private val database: Database) {
     }
 
     suspend fun addReservation(deviceId: Int, from: Long, to: Long, userId: Int): Result<Unit> {
-        return Success(database.addReservation(Reservation(database.getNextReservationId(), deviceId, from, to, userId)))
+        return try {
+            if (database.getDevice(deviceId).available) {
+                database.setDeviceAvailability(deviceId, false)
+                database.addReservation(Reservation(database.getNextReservationId(), deviceId, from, to, userId))
+                Success(Unit)
+            }
+            else{
+                Conflict("device $deviceId is already reserved")
+            }
+        } catch (e: WrongIdException) {
+            NotFound(deviceId)
+        }
     }
 
     suspend fun deleteReservation(id: Int): Result<Unit> {
-        return try {
-            Success(database.deleteReservation(id))
-        } catch (e: Exception) {
-            NotFound(id)
+        return if (database.getActiveLeases().none { it.reservationId == id }) {
+            try {
+                val deviceId = database.getReservation(id).deviceId
+                database.setDeviceAvailability(deviceId, true)
+                Success(database.deleteReservation(id))
+            } catch (e: WrongIdException) {
+                NotFound(id)
+            }
+        }
+        else {
+            Conflict("reservation $id is served, and active")
         }
     }
 }
