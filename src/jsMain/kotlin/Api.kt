@@ -40,15 +40,14 @@ suspend fun getDeviceList(): List<Device>{
     return response.receive()
 }
 
-suspend fun deleteDevice(id: Int): Unit {
+suspend fun deleteDevice(id: Int) {
     return jsonClient.delete(endpoint + ServerApiPath.devicePath + "/${id}") {
         header("Authorization", "Bearer " + TokenStore.get())
     }
 }
 
-suspend fun addDevice(name: String, description: String): Unit {
+suspend fun addDevice(name: String, description: String) {
     return jsonClient.post(endpoint + ServerApiPath.devicePath) {
-        contentType(ContentType.Application.Json)
         header("Authorization", "Bearer " + TokenStore.get())
         parameter("name", name)
         parameter("desc", description)
@@ -61,9 +60,8 @@ suspend fun getReservationList(): List<Reservation> {
     }
 }
 
-suspend fun addReservation(deviceId: Int, from: Long, to: Long): Unit {
+suspend fun addReservation(deviceId: Int, from: Long, to: Long) {
     return jsonClient.post(endpoint + ServerApiPath.reservationPath) {
-        contentType(ContentType.Application.Json)
         header("Authorization", "Bearer " + TokenStore.get())
         parameter("deviceid", deviceId)
         parameter("from", from)
@@ -71,9 +69,8 @@ suspend fun addReservation(deviceId: Int, from: Long, to: Long): Unit {
     }
 }
 
-suspend fun registerUser(name: String, email: String, phone: String, address: String, pwHash: String): Unit {
+suspend fun registerUser(name: String, email: String, phone: String, address: String, pwHash: String) {
     return jsonClient.post(endpoint + ServerApiPath.userPath) {
-        contentType(ContentType.Application.Json)
         header("Authorization", "Bearer " + TokenStore.get())
         parameter("name", name)
         parameter("email", email)
@@ -88,7 +85,6 @@ suspend fun registerUser(name: String, email: String, phone: String, address: St
  */
 suspend fun loginAsUser(email: String, pwHash: String): String {
     return jsonClient.post(endpoint + ServerApiPath.userPath + "/login") {
-        contentType(ContentType.Application.Json)
         header("Authorization", "Bearer " + TokenStore.get())
         body = "$email|$pwHash"
     }

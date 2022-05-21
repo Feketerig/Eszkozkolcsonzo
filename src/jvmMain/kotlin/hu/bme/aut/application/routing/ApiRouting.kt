@@ -224,7 +224,7 @@ fun Application.userApi(users: Users) {
                 }
             }
             post("/login") {
-                val msg = call.receive<String>().drop(1).dropLast(1).split("|")
+                val msg = call.receive<String>().split("|")
                 when (val result = users.loginWith(msg[0], msg[1])) {
                     is Success -> call.respond(result.result)
                     is Unauthorized -> call.respond(HttpStatusCode.Unauthorized)
