@@ -4,6 +4,8 @@ import hu.bme.aut.application.backend.Devices
 import hu.bme.aut.application.backend.Leases
 import hu.bme.aut.application.backend.Reservations
 import hu.bme.aut.application.backend.Users
+import hu.bme.aut.application.backend.utils.Conflict
+import hu.bme.aut.application.backend.utils.NotFound
 import hu.bme.aut.application.backend.utils.Success
 import hu.bme.aut.application.backend.utils.Unauthorized
 import hu.bme.aut.application.routing.utils.requireAccessLevel
@@ -39,7 +41,8 @@ fun Application.deviceApi(devices: Devices){
                         val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
                         when (devices.deleteDevice(id)) {
                             is Success -> call.respond(HttpStatusCode.OK)
-                            else -> call.respond(HttpStatusCode.NotFound)
+                            is NotFound -> call.respond(HttpStatusCode.NotFound)
+                            else -> call.respond(HttpStatusCode.InternalServerError)
                         }
                     }
                 }
@@ -50,7 +53,8 @@ fun Application.deviceApi(devices: Devices){
                     val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
                     when (val result = devices.getDevice(id)) {
                         is Success -> call.respond(result.result)
-                        else -> call.respond(HttpStatusCode.NotFound)
+                        is NotFound -> call.respond(HttpStatusCode.NotFound)
+                        else -> call.respond(HttpStatusCode.InternalServerError)
                     }
                 }
             }
@@ -83,7 +87,8 @@ fun Application.leaseApi(leases: Leases) {
                         val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
                         when (leases.deleteLease(id)) {
                             is Success -> call.respond(HttpStatusCode.OK)
-                            else -> call.respond(HttpStatusCode.NotFound)
+                            is NotFound -> call.respond(HttpStatusCode.NotFound)
+                            else -> call.respond(HttpStatusCode.InternalServerError)
                         }
                     }
                 }
@@ -94,14 +99,16 @@ fun Application.leaseApi(leases: Leases) {
                     val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
                     when (val result = leases.getLease(id)) {
                         is Success -> call.respond(result.result)
-                        else -> call.respond(HttpStatusCode.NotFound)
+                        is NotFound -> call.respond(HttpStatusCode.NotFound)
+                        else -> call.respond(HttpStatusCode.InternalServerError)
                     }
                 }
                 get("/reservation/{id}") {
                     val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
                     when (val result = leases.getLeaseIdByReservationId(id)) {
                         is Success -> call.respond(result.result)
-                        else -> call.respond(HttpStatusCode.NotFound)
+                        is NotFound -> call.respond(HttpStatusCode.NotFound)
+                        else -> call.respond(HttpStatusCode.InternalServerError)
                     }
                 }
             }
@@ -120,21 +127,24 @@ fun Application.reservationApi(reservations: Reservations) {
                     val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
                     when (val result = reservations.getReservation(id)) {
                         is Success -> call.respond(result.result)
-                        else -> call.respond(HttpStatusCode.NotFound)
+                        is NotFound -> call.respond(HttpStatusCode.NotFound)
+                        else -> call.respond(HttpStatusCode.InternalServerError)
                     }
                 }
                 get("/user/{id}") {
                     val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
                     when (val result = reservations.getAllReservationByUserId(id)) {
                         is Success -> call.respond(result.result)
-                        else -> call.respond(HttpStatusCode.NotFound)
+                        is NotFound -> call.respond(HttpStatusCode.NotFound)
+                        else -> call.respond(HttpStatusCode.InternalServerError)
                     }
                 }
                 get("/device/{id}") {
                     val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
                     when (val result = reservations.getReservationByDeviceId(id)) {
                         is Success -> call.respond(result.result)
-                        else -> call.respond(HttpStatusCode.NotFound)
+                        is NotFound -> call.respond(HttpStatusCode.NotFound)
+                        else -> call.respond(HttpStatusCode.InternalServerError)
                     }
                 }
                 post() {
@@ -149,7 +159,8 @@ fun Application.reservationApi(reservations: Reservations) {
                     val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
                     when (val result = reservations.deleteReservation(id)) {
                         is Success -> call.respond(result.result)
-                        else -> call.respond(HttpStatusCode.NotFound)
+                        is NotFound -> call.respond(HttpStatusCode.NotFound)
+                        else -> call.respond(HttpStatusCode.InternalServerError)
                     }
                 }
             }
@@ -166,7 +177,8 @@ fun Application.userApi(users: Users) {
                         val email = call.request.queryParameters["email"] ?: error("Invalid username")
                         when (val result = users.getUserByEmail(email)) {
                             is Success -> call.respond(result.result)
-                            else -> call.respond(HttpStatusCode.NotFound)
+                            is NotFound -> call.respond(HttpStatusCode.NotFound)
+                            else -> call.respond(HttpStatusCode.InternalServerError)
                         }
                     }
                 }
@@ -175,7 +187,8 @@ fun Application.userApi(users: Users) {
                         val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
                         when (val result = users.getUserById(id)) {
                             is Success -> call.respond(result.result)
-                            else -> call.respond(HttpStatusCode.NotFound)
+                            is NotFound -> call.respond(HttpStatusCode.NotFound)
+                            else -> call.respond(HttpStatusCode.InternalServerError)
                         }
                     }
                 }
@@ -184,7 +197,8 @@ fun Application.userApi(users: Users) {
                         val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
                         when (val result = users.getUserNameById(id)) {
                             is Success -> call.respond(result.result)
-                            else -> call.respond(HttpStatusCode.NotFound)
+                            is NotFound -> call.respond(HttpStatusCode.NotFound)
+                            else -> call.respond(HttpStatusCode.InternalServerError)
                         }
                     }
                 }
@@ -200,7 +214,8 @@ fun Application.userApi(users: Users) {
                 val pwHash = call.parameters["pwHash"] ?: error("password must be specified")
                 when (users.registerUser(name, email, phone, address, pwHash, User.Privilege.User)) {
                     is Success -> call.respond(HttpStatusCode.OK)
-                    else -> call.respond(HttpStatusCode.Conflict)
+                    is Conflict -> call.respond(HttpStatusCode.Conflict)
+                    else -> call.respond(HttpStatusCode.InternalServerError)
                 }
             }
             post("/login") {
@@ -208,7 +223,8 @@ fun Application.userApi(users: Users) {
                 when (val result = users.loginWith(msg[0], msg[1])) {
                     is Success -> call.respond(result.result)
                     is Unauthorized -> call.respond(HttpStatusCode.Unauthorized)
-                    else -> call.respond(HttpStatusCode.NotFound)
+                    is NotFound -> call.respond(HttpStatusCode.NotFound)
+                    else -> call.respond(HttpStatusCode.InternalServerError)
                 }
             }
         }

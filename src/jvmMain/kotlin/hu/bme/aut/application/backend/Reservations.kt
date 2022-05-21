@@ -1,6 +1,6 @@
 package hu.bme.aut.application.backend
 
-import hu.bme.aut.application.backend.utils.Error
+import hu.bme.aut.application.backend.utils.NotFound
 import hu.bme.aut.application.backend.utils.Result
 import hu.bme.aut.application.backend.utils.Success
 import hu.bme.aut.application.database.Database
@@ -17,7 +17,7 @@ class Reservations(private val database: Database) {
         return try {
             Success(database.getReservation(id))
         } catch (e: WrongIdException) {
-            Error(e)
+            NotFound(id)
         }
     }
 
@@ -29,7 +29,7 @@ class Reservations(private val database: Database) {
         return try {
             Success(database.getReservationByDeviceId(id))
         } catch (e: WrongIdException) {
-            Error(e)
+            NotFound(id)
         }
     }
 
@@ -40,8 +40,8 @@ class Reservations(private val database: Database) {
     suspend fun deleteReservation(id: Int): Result<Unit> {
         return try {
             Success(database.deleteReservation(id))
-        } catch (e: WrongIdException) {
-            Error(e)
+        } catch (e: Exception) {
+            NotFound(id)
         }
     }
 }

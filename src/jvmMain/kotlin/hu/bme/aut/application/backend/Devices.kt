@@ -1,6 +1,6 @@
 package hu.bme.aut.application.backend
 
-import hu.bme.aut.application.backend.utils.Error
+import hu.bme.aut.application.backend.utils.NotFound
 import hu.bme.aut.application.backend.utils.Result
 import hu.bme.aut.application.backend.utils.Success
 import hu.bme.aut.application.database.Database
@@ -17,21 +17,19 @@ class Devices(private val database: Database) {
         return try {
             Success(database.getDevice(id))
         } catch (e: WrongIdException) {
-            Error(e)
+            NotFound(id)
         }
     }
 
     suspend fun addDevice(name: String, desc: String): Result<Unit> {
-        database.addDevice(Device(database.getNextDeviceId(), name, desc, true))
-        return Success(Unit)
+        return Success(database.addDevice(Device(database.getNextDeviceId(), name, desc, true)))
     }
 
     suspend fun deleteDevice(id: Int): Result<Unit> {
         return try {
-            database.deleteDevice(id)
-            Success(Unit)
-        } catch (e: WrongIdException) {
-            Error(e)
+            Success(database.deleteDevice(id))
+        } catch (e: Exception) {
+            NotFound(id)
         }
     }
 }

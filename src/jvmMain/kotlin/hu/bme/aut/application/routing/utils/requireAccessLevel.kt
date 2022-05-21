@@ -23,7 +23,6 @@ fun checkAccessLevel(principal: UserAuthPrincipal, required: Privilege): Boolean
         Privilege.Handler -> Privilege.Handler.compare(principal.privilege) || Privilege.Admin.compare(principal.privilege)
         Privilege.User -> true
     }
-
 }
 
 private fun Privilege.compare(other: String): Boolean = toString() == other

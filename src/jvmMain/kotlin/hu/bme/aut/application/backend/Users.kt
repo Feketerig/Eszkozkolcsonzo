@@ -12,15 +12,14 @@ class Users(private val database: Database) {
         return try {
             Success(database.getUserByEmail(email))
         } catch (e: WrongIdException) {
-            Error(e)
+            NotFound(-1)
         }
     }
 
     suspend fun registerUser(name: String, email: String, phone: String, address: String,
                              pwHash: String, privilege: User.Privilege): Result<Unit> {
-        return if (database.emailAlreadyExists(email).not()){
-            database.addUser(User(database.getNextUserId(), name, email, phone, address, pwHash, privilege))
-            Success(Unit)
+        return if (database.emailAlreadyExists(email).not()) {
+            Success(database.addUser(User(database.getNextUserId(), name, email, phone, address, pwHash, privilege)))
         } else {
             Conflict("email")
         }
@@ -30,7 +29,7 @@ class Users(private val database: Database) {
         return try {
             Success(database.getUserNameById(userId))
         } catch (e: WrongIdException) {
-            Error(e)
+            NotFound(userId)
         }
     }
 
@@ -38,7 +37,7 @@ class Users(private val database: Database) {
         return try {
             Success(database.getUserById(userId))
         } catch (e: WrongIdException) {
-            Error(e)
+            NotFound(userId)
         }
     }
 
@@ -52,7 +51,7 @@ class Users(private val database: Database) {
                 Unauthorized()
             }
         } catch (e: WrongIdException) {
-            Error(e)
+            NotFound(-1)
         }
     }
 }
