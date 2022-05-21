@@ -21,7 +21,7 @@ class Users(private val database: Database) {
         return if (database.emailAlreadyExists(email).not()) {
             Success(database.addUser(User(database.getNextUserId(), name, email, phone, address, pwHash, privilege)))
         } else {
-            Conflict("email")
+            Conflict("email already exists")
         }
     }
 
