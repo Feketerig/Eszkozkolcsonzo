@@ -24,7 +24,7 @@ private val scope = MainScope()
 
 external interface RegisterComponentProps : Props
 
-val RegisterComponent = FC<RegisterComponentProps> { props ->
+val RegisterComponent = FC<RegisterComponentProps> { _ ->
     val (email, setEmail) = useState("")
     val (password, setPassword) = useState("")
     val (name, setName) = useState("")
@@ -34,7 +34,7 @@ val RegisterComponent = FC<RegisterComponentProps> { props ->
 
     form {
         div {
-            LabeledInputField { //TODO: check for duplicate email
+            LabeledInputField {
                 description = "E-mail cím"
                 inputType = InputType.email
                 value = email
