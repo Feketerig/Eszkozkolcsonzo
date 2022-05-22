@@ -1,3 +1,4 @@
+
 import components.TestComponent
 import components.device.DeviceList
 import components.page.PageHeaderComponent
@@ -5,13 +6,15 @@ import components.reservation.ReservationList
 import components.user.LoginComponent
 import components.user.RegisterComponent
 import csstype.Margin
-import utils.path.AppPath
-import react.*
+import react.FC
+import react.Props
+import react.create
 import react.css.css
 import react.dom.html.ReactHTML.div
 import react.router.Route
 import react.router.Routes
 import react.router.dom.BrowserRouter
+import utils.path.AppPath
 
 val App = FC<Props> {
 
