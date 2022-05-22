@@ -1,13 +1,16 @@
 package components.page
 
 import csstype.*
+import model.User
 import react.FC
 import react.Props
 import react.css.css
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.h1
 import react.dom.html.ReactHTML.nav
+import utils.AppState
 import utils.browser.PageNavigator
+import utils.browser.TokenStore
 
 
 val PageHeaderComponent = FC<Props> {
@@ -22,18 +25,89 @@ val PageHeaderComponent = FC<Props> {
             position = Position.sticky
         }
 
-        div {
-            PageHeaderButton {
-                title = "Eszközök"
-                navigation = { PageNavigator.toDevices() }
+        when (TokenStore.getUserPrivilege()) {
+            User.Privilege.User -> div {
+                PageHeaderButton {
+                    title = "Eszközök"
+                    navigation = { PageNavigator.toDevices() }
+                }
+                PageHeaderButton {
+                    title = "Foglalásaim"
+                    navigation = {
+                        AppState.reservations_onlyown = true
+                        PageNavigator.toReservations()
+                    }
+                }
+                PageHeaderButton {
+                    title = "Kijelentkezés"
+                    navigation = { PageNavigator.toLogout() }
+                }
             }
-            PageHeaderButton {
-                title = "Foglalásaim"
-                navigation = { PageNavigator.toReservations() }
+            User.Privilege.Handler -> div {
+                PageHeaderButton {
+                    title = "Eszközök"
+                    navigation = { PageNavigator.toDevices() }
+                }
+                PageHeaderButton {
+                    title = "Összes Foglalás"
+                    navigation = {
+                        AppState.reservations_onlyown = false
+                        PageNavigator.toReservations()
+                    }
+                }
+                PageHeaderButton {
+                    title = "Kiadások"
+                    navigation = { PageNavigator.toLeases() }
+                }
+                PageHeaderButton {
+                    title = "Foglalásaim"
+                    navigation = {
+                        AppState.reservations_onlyown = true
+                        PageNavigator.toReservations()
+                    }
+                }
+                PageHeaderButton {
+                    title = "Kijelentkezés"
+                    navigation = { PageNavigator.toLogout() }
+                }
             }
-            PageHeaderButton {
-                title = "Bejelentkezés"
-                navigation = { PageNavigator.toLogin() }
+            User.Privilege.Admin -> div {
+                PageHeaderButton {
+                    title = "Eszközök"
+                    navigation = { PageNavigator.toDevices() }
+                }
+                PageHeaderButton {
+                    title = "Összes Foglalás"
+                    navigation = {
+                        AppState.reservations_onlyown = false
+                        PageNavigator.toReservations()
+                    }
+                }
+                PageHeaderButton {
+                    title = "Kiadások"
+                    navigation = { PageNavigator.toLeases() }
+                }
+                PageHeaderButton {
+                    title = "Foglalásaim"
+                    navigation = {
+                        AppState.reservations_onlyown = true
+                        PageNavigator.toReservations()
+                    }
+                }
+                /*PageHeaderButton {
+                    title = "Felhasználók"
+                    navigation = { PageNavigator.toUsers() }
+                }*/
+                PageHeaderButton {
+                    title = "Kijelentkezés"
+                    navigation = { PageNavigator.toLogout() }
+                }
+            }
+            null -> div {
+                PageHeaderButton {
+                    title = "Bejelentkezés"
+                    navigation = { PageNavigator.toLogin() }
+                }
             }
         }
 
