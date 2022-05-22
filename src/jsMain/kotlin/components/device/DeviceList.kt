@@ -14,7 +14,9 @@ import react.Props
 import react.dom.html.ReactHTML.ul
 import react.useEffectOnce
 import react.useState
+import utils.browser.PageNavigator
 import utils.exceptions.ConflictException
+import utils.exceptions.UnauthorizedException
 
 private val scope = MainScope()
 
@@ -25,8 +27,14 @@ val DeviceList = FC<DeviceListProps> {
     val (selectedDevice, setSelected) = useState<Device?>(null)
 
     useEffectOnce {
-        scope.launch {
-            deviceList = getDeviceList()
+        scope.launch { //TODO This is great, it works, but it shouldnt be here. redirect to login should happen on the server immediately
+                       //TODO This kind of solution is only for low access level, not generally having to be logged in.
+                       //TODO Also this should be in a function, not to spam it everywhere
+            try {
+                deviceList = getDeviceList()
+            } catch (e: UnauthorizedException) {
+                PageNavigator.toLogin()
+            }
         }
     }
 

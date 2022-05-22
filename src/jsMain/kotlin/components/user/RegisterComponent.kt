@@ -34,7 +34,7 @@ val RegisterComponent = FC<RegisterComponentProps> { props ->
 
     form {
         div {
-            LabeledInputField {
+            LabeledInputField { //TODO: check for duplicate email
                 description = "E-mail cím"
                 inputType = InputType.email
                 value = email
