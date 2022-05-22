@@ -1,5 +1,6 @@
 package components.reservation
 
+import getReservationList
 import getReservationListForCurrentUser
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -9,6 +10,7 @@ import react.Props
 import react.dom.html.ReactHTML.ul
 import react.useEffectOnce
 import react.useState
+import utils.AppState
 import utils.browser.PageNavigator
 import utils.exceptions.UnauthorizedException
 
@@ -24,7 +26,11 @@ val ReservationList = FC<ReservationListProps> {
                       //TODO This kind of solution is only for low access level, not generally having to be logged in.
                       //TODO Also this should be in a function, not to spam it everywhere
             try {
-                reservationList = getReservationListForCurrentUser()
+                reservationList = if (AppState.reservations_onlyown) {
+                    getReservationListForCurrentUser()
+                } else {
+                    getReservationList()
+                }
             } catch (e: UnauthorizedException) {
                 PageNavigator.toLogin()
             }
