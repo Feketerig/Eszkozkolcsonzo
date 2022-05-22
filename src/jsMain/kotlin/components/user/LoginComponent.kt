@@ -2,6 +2,7 @@ package components.user
 
 import components.LabeledInputField
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import loginAsUser
 import react.FC
@@ -52,7 +53,7 @@ val LoginComponent = FC<LoginComponentProps> { props ->
             it.preventDefault()
             scope.launch {
                 try {
-                    TokenStore.put(loginAsUser(email, password.sha256()))
+                    async { TokenStore.setJwtToken(loginAsUser(email, password.sha256())) }.await()
                     setMessage("")
                     PageNavigator.toDevices()
                 } catch (e: NotFoundException) {

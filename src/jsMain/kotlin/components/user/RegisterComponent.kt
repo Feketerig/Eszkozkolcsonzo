@@ -16,6 +16,7 @@ import react.dom.html.ReactHTML.p
 import react.useState
 import registerUser
 import utils.browser.PageNavigator
+import utils.browser.TokenStore
 import utils.exceptions.ConflictException
 import utils.hash.sha256
 
@@ -71,7 +72,7 @@ val RegisterComponent = FC<RegisterComponentProps> { props ->
             scope.launch {
                 try {
                     async { registerUser(name, email, phone, address, password.sha256()) }.await()
-                    async { loginAsUser(email, password.sha256()) }.await()
+                    async { TokenStore.setJwtToken(loginAsUser(email, password.sha256())) }.await()
                     setName(""); setEmail(""); setPassword(""); setPhone(""); setAddress("")
                     setMessage("")
                     PageNavigator.toDevices()

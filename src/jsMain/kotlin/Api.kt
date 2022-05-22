@@ -35,20 +35,20 @@ val jsonClient = HttpClient {
 
 suspend fun getDeviceList(): List<Device>{
     val response: HttpResponse = jsonClient.get(endpoint + ServerApiPath.devicePath) {
-        header("Authorization", "Bearer " + TokenStore.get())
+        header("Authorization", "Bearer " + TokenStore.getJwtToken())
     }
     return response.receive()
 }
 
 suspend fun deleteDevice(id: Int) {
     return jsonClient.delete(endpoint + ServerApiPath.devicePath + "/${id}") {
-        header("Authorization", "Bearer " + TokenStore.get())
+        header("Authorization", "Bearer " + TokenStore.getJwtToken())
     }
 }
 
 suspend fun addDevice(name: String, description: String) {
     return jsonClient.post(endpoint + ServerApiPath.devicePath) {
-        header("Authorization", "Bearer " + TokenStore.get())
+        header("Authorization", "Bearer " + TokenStore.getJwtToken())
         parameter("name", name)
         parameter("desc", description)
     }
@@ -56,19 +56,19 @@ suspend fun addDevice(name: String, description: String) {
 
 suspend fun getReservationList(): List<Reservation> {
     return jsonClient.get(endpoint + ServerApiPath.reservationPath) {
-        header("Authorization", "Bearer " + TokenStore.get())
+        header("Authorization", "Bearer " + TokenStore.getJwtToken())
     }
 }
 
 suspend fun getReservationListForCurrentUser(): List<Reservation> {
     return jsonClient.get(endpoint + ServerApiPath.reservationPath + "/user") {
-        header("Authorization", "Bearer " + TokenStore.get())
+        header("Authorization", "Bearer " + TokenStore.getJwtToken())
     }
 }
 
 suspend fun addReservation(deviceId: Int, from: Long, to: Long) {
     return jsonClient.post(endpoint + ServerApiPath.reservationPath) {
-        header("Authorization", "Bearer " + TokenStore.get())
+        header("Authorization", "Bearer " + TokenStore.getJwtToken())
         parameter("deviceid", deviceId)
         parameter("from", from)
         parameter("to", to)
@@ -77,7 +77,7 @@ suspend fun addReservation(deviceId: Int, from: Long, to: Long) {
 
 suspend fun registerUser(name: String, email: String, phone: String, address: String, pwHash: String) {
     return jsonClient.post(endpoint + ServerApiPath.userPath) {
-        header("Authorization", "Bearer " + TokenStore.get())
+        header("Authorization", "Bearer " + TokenStore.getJwtToken())
         parameter("name", name)
         parameter("email", email)
         parameter("phone", phone)
@@ -91,7 +91,7 @@ suspend fun registerUser(name: String, email: String, phone: String, address: St
  */
 suspend fun loginAsUser(email: String, pwHash: String): String {
     return jsonClient.post(endpoint + ServerApiPath.userPath + "/login") {
-        header("Authorization", "Bearer " + TokenStore.get())
+        header("Authorization", "Bearer " + TokenStore.getJwtToken())
         body = "$email|$pwHash"
     }
 }
