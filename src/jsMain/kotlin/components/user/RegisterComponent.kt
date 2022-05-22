@@ -1,7 +1,10 @@
 package components.user
 
+import components.LabeledInputField
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import loginAsUser
 import react.FC
 import react.Props
 import react.dom.html.ButtonType
@@ -9,12 +12,9 @@ import react.dom.html.InputType
 import react.dom.html.ReactHTML.button
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.form
+import react.dom.html.ReactHTML.p
 import react.useState
 import registerUser
-import components.LabeledInputField
-import kotlinx.coroutines.async
-import loginAsUser
-import react.dom.html.ReactHTML.p
 import utils.browser.PageNavigator
 import utils.exceptions.ConflictException
 import utils.hash.sha256
@@ -84,6 +84,13 @@ val RegisterComponent = FC<RegisterComponentProps> { props ->
         button {
             type = ButtonType.submit
             +"Regisztráció"
+        }
+    }
+
+    div {
+        button {
+            onClick = { PageNavigator.toLogin() }
+            +"Már van fiókom, belépek"
         }
     }
 }

@@ -1,23 +1,23 @@
 package components.user
 
-import loginAsUser
 import components.LabeledInputField
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import loginAsUser
 import react.FC
 import react.Props
 import react.dom.html.ButtonType
 import react.dom.html.InputType
-import react.dom.html.ReactHTML
+import react.dom.html.ReactHTML.button
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.form
-import react.useState
 import react.dom.html.ReactHTML.p
-import utils.hash.sha256
+import react.useState
 import utils.browser.PageNavigator
 import utils.browser.TokenStore
 import utils.exceptions.NotFoundException
 import utils.exceptions.UnauthorizedException
+import utils.hash.sha256
 
 private val scope = MainScope()
 
@@ -63,9 +63,16 @@ val LoginComponent = FC<LoginComponentProps> { props ->
             }
         }
 
-        ReactHTML.button {
+        button {
             type = ButtonType.submit
             +"Belépés"
+        }
+    }
+
+    div {
+        button {
+            onClick = { PageNavigator.toRegistration() }
+            +"Még nincs fiókom, regisztrálok"
         }
     }
 }
