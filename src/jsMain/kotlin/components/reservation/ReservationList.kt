@@ -13,6 +13,7 @@ import react.useEffectOnce
 import react.useState
 import utils.browser.AppState
 import utils.browser.PageNavigator
+import utils.browser.TokenStore
 import utils.exceptions.UnauthorizedException
 
 private val scope = MainScope()
@@ -21,6 +22,7 @@ external interface ReservationListProps : Props
 
 val ReservationList = FC<ReservationListProps> {
     var reservationList by useState(emptyList<Reservation>())
+    val userId by useState(TokenStore.getUserId())
 
     useEffectOnce {
         scope.launch {//TODO This is great, it works, but it shouldnt be here. redirect to login should happen on the server immediately
@@ -39,6 +41,7 @@ val ReservationList = FC<ReservationListProps> {
         reservationList.forEach { item ->
             ReservationListItem {
                 reservation = item
+                forUser = userId
                 onDelete = { reservation ->
                     MainScope().launch {
                         deleteReservation(reservation.id)

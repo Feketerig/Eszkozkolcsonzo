@@ -13,6 +13,7 @@ import utils.browser.TokenStore
 
 external interface ReservationListItemProps : Props {
     var reservation: Reservation
+    var forUser: Int?
     var onDelete: (Reservation) -> Unit
 }
 
@@ -27,7 +28,7 @@ val ReservationListItem = FC<ReservationListItemProps> { props ->
             }
         }
 
-        if (TokenStore.getUserPrivilege() != User.Privilege.User) {
+        if (TokenStore.getUserPrivilege() != User.Privilege.User || (props.forUser ?: -1) == props.reservation.userId ) {
             button {
                 +"Delete"
                 onClick = {

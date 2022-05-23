@@ -34,4 +34,14 @@ object TokenStore {
             null
         }
     }
+
+    fun getUserId(): Int? {
+        return try {
+            val token = window.sessionStorage.getItem(jwt_token)!!.base64Decode()
+            val id = token.split("\"id\":")[1].takeWhile { c -> c.isDigit() }
+            id.toInt()
+        } catch (e: Exception) {
+            null
+        }
+    }
 }
