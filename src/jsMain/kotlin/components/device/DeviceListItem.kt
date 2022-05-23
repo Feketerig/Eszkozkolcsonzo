@@ -1,11 +1,13 @@
 package components.device
 
 import model.Device
+import model.User
 import react.FC
 import react.Props
 import react.dom.html.ReactHTML.button
 import react.dom.html.ReactHTML.li
 import react.key
+import utils.browser.TokenStore
 
 external interface DeviceListItemProps : Props {
     var device: Device
@@ -18,11 +20,13 @@ val DeviceListItem = FC<DeviceListItemProps> { props ->
         key = props.device.toString()
         +"${props.device.name} \t ${props.device.desc} \t ${props.device.available}"
 
-        button {
-            +"Delete"
-            onClick = {
-                it.preventDefault()
-                props.onDelete(props.device)
+        if (TokenStore.getUserPrivilege() != User.Privilege.User) {
+            button {
+                +"Delete"
+                onClick = {
+                    it.preventDefault()
+                    props.onDelete(props.device)
+                }
             }
         }
 
