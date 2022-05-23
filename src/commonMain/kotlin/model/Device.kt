@@ -6,6 +6,5 @@ import kotlinx.serialization.Serializable
 data class Device(
     val id: Int,
     val name: String,
-    val desc: String,
-    val available: Boolean
+    val desc: String
 )

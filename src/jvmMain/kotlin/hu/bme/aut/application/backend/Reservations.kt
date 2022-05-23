@@ -24,23 +24,22 @@ class Reservations(private val database: Database) {
         return Success(database.getAllReservationByUserId(id))
     }
 
-    suspend fun getReservationByDeviceId(id: Int): Result<Reservation> {
+    suspend fun getReservationsByDeviceId(id: Int): Result<List<Reservation>> {
         return try {
-            Success(database.getReservationByDeviceId(id))
-        } catch (e: WrongIdException) {
+            Success(database.getReservationsByDeviceId(id))
+        } catch (e: Exception) {
             NotFound(id)
         }
     }
 
     suspend fun addReservation(deviceId: Int, from: Long, to: Long, userId: Int): Result<Unit> {
         return try {
-            if (database.getDevice(deviceId).available) {
-                database.setDeviceAvailability(deviceId, false)
+            if (database.checkDeviceAvailability(deviceId, from, to)) {
                 database.addReservation(Reservation(database.getNextReservationId(), deviceId, from, to, userId))
                 Success(Unit)
             }
             else{
-                Conflict("device $deviceId is already reserved")
+                Conflict("device $deviceId is already reserved in this time window")
             }
         } catch (e: WrongIdException) {
             NotFound(deviceId)
@@ -52,7 +51,6 @@ class Reservations(private val database: Database) {
             try {
                 val reservation = database.getReservation(reservationId)
                 if (reservation.userId == userId || database.getUserById(userId).privilege != User.Privilege.User) {
-                    database.setDeviceAvailability(reservation.deviceId, true)
                     Success(database.deleteReservation(reservationId))
                 }
                 else {

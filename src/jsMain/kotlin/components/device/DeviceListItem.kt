@@ -18,7 +18,7 @@ external interface DeviceListItemProps : Props {
 val DeviceListItem = FC<DeviceListItemProps> { props ->
     li {
         key = props.device.toString()
-        +"${props.device.name} \t ${props.device.desc} \t ${props.device.available}"
+        +"${props.device.name} \t ${props.device.desc}"
 
         if (TokenStore.getUserPrivilege() != User.Privilege.User) {
             button {

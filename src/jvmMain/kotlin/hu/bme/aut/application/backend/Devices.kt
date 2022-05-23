@@ -23,12 +23,12 @@ class Devices(private val database: Database) {
     }
 
     suspend fun addDevice(name: String, desc: String): Result<Unit> {
-        return Success(database.addDevice(Device(database.getNextDeviceId(), name, desc, true)))
+        return Success(database.addDevice(Device(database.getNextDeviceId(), name, desc)))
     }
 
     suspend fun deleteDevice(id: Int): Result<Unit> {
         return try {
-            if (database.getDevice(id).available)
+            if (database.getReservationsByDeviceId(id).isEmpty())
                 Success(database.deleteDevice(id))
             else
                 Conflict("device is reserved, cannot be deleted")

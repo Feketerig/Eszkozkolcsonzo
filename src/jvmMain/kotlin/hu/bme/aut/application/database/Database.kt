@@ -21,7 +21,7 @@ interface Database {
 
     suspend fun deleteDevice(id: Int)
 
-    suspend fun setDeviceAvailability(id: Int, availability: Boolean)
+    suspend fun checkDeviceAvailability(deviceId: Int, startDate: Long, endDate: Long): Boolean
 
     suspend fun getActiveLeases(): List<Lease>
 
@@ -43,7 +43,7 @@ interface Database {
 
     suspend fun getAllReservationByUserId(id: Int): List<Reservation>
 
-    suspend fun getReservationByDeviceId(id: Int): Reservation
+    suspend fun getReservationsByDeviceId(id: Int): List<Reservation>
 
     suspend fun addReservation(reservation: Reservation)
 

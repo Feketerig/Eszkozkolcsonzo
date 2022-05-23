@@ -10,6 +10,7 @@ import org.litote.kmongo.div
 import org.litote.kmongo.eq
 import org.litote.kmongo.setValue
 import org.litote.kmongo.upsert
+import utils.validators.rangesOverlap
 
 class MongoDB(
     database: CoroutineDatabase
@@ -39,8 +40,11 @@ class MongoDB(
         devices.deleteOne(Device::id eq id)
     }
 
-    override suspend fun setDeviceAvailability(id: Int, availability: Boolean) {
-        devices.updateOne(Device::id eq id, setValue(Device::available, availability))
+    override suspend fun checkDeviceAvailability(deviceId: Int, startDate: Long, endDate: Long): Boolean {
+        //A device is available for a time period, if there are no reservations, which overlap the desired range
+        return getReservationsByDeviceId(deviceId).none { res ->
+            rangesOverlap(res.startDate, res.endDate, startDate, endDate)
+        }
     }
 
     override suspend fun getActiveLeases(): List<Lease> = leases.find(Lease::active eq true).toList()
@@ -76,8 +80,8 @@ class MongoDB(
         return reservations.find(Reservation::userId eq id).toList()
     }
 
-    override suspend fun getReservationByDeviceId(id: Int): Reservation {
-        return reservations.findOne(Reservation::deviceId eq id) ?: throw WrongIdException()
+    override suspend fun getReservationsByDeviceId(id: Int): List<Reservation> {
+        return reservations.find(Reservation::deviceId eq id).toList()
     }
 
     override suspend fun addReservation(reservation: Reservation) {

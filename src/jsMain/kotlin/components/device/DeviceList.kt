@@ -1,7 +1,6 @@
 package components.device
 
 import addDevice
-import addReservation
 import components.reservation.ReservationCreateComponent
 import deleteDevice
 import getDeviceList
@@ -76,11 +75,6 @@ val DeviceList = FC<DeviceListProps> {
     if (selectedDevice != null){
         ReservationCreateComponent {
             device = selectedDevice
-            onCreateReservation = { deviceId, from, to ->
-                scope.launch {
-                    addReservation(deviceId, from, to)
-                }
-            }
         }
     }
 }

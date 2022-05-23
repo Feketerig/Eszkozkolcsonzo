@@ -136,7 +136,7 @@ fun Application.reservationApi(reservations: Reservations) {
                 get("/device/{id}") {
                     requireAccessLevel(User.Privilege.Handler) {
                         val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
-                        when (val result = reservations.getReservationByDeviceId(id)) {
+                        when (val result = reservations.getReservationsByDeviceId(id)) {
                             is Success -> call.respond(result.result)
                             is NotFound -> call.respond(HttpStatusCode.NotFound)
                             else -> call.respond(HttpStatusCode.InternalServerError)
