@@ -1,7 +1,6 @@
 package utils.browser
 
 import kotlinx.browser.window
-import utils.AppState
 import utils.path.AppPath
 
 object PageNavigator {
@@ -11,7 +10,7 @@ object PageNavigator {
     fun toRegistration() { window.location.href = window.origin + AppPath.register }
     fun toReservations() { window.location.href = window.origin + AppPath.reservations }
     fun toLogout() {
-        TokenStore.setJwtToken("")
+        TokenStore.clear()
         AppState.clear()
         window.location.href = window.origin + AppPath.login
     }

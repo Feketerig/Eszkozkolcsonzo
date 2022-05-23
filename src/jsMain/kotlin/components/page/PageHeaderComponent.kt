@@ -8,7 +8,7 @@ import react.css.css
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.h1
 import react.dom.html.ReactHTML.nav
-import utils.AppState
+import utils.browser.AppState
 import utils.browser.PageNavigator
 import utils.browser.TokenStore
 
@@ -34,7 +34,7 @@ val PageHeaderComponent = FC<Props> {
                 PageHeaderButton {
                     title = "Foglalásaim"
                     navigation = {
-                        AppState.reservations_onlyown = true
+                        AppState.displayPersonalReservationsOnly = true
                         PageNavigator.toReservations()
                     }
                 }
@@ -51,7 +51,7 @@ val PageHeaderComponent = FC<Props> {
                 PageHeaderButton {
                     title = "Összes Foglalás"
                     navigation = {
-                        AppState.reservations_onlyown = false
+                        AppState.displayPersonalReservationsOnly = false
                         PageNavigator.toReservations()
                     }
                 }
@@ -62,7 +62,7 @@ val PageHeaderComponent = FC<Props> {
                 PageHeaderButton {
                     title = "Foglalásaim"
                     navigation = {
-                        AppState.reservations_onlyown = true
+                        AppState.displayPersonalReservationsOnly = true
                         PageNavigator.toReservations()
                     }
                 }
@@ -79,7 +79,7 @@ val PageHeaderComponent = FC<Props> {
                 PageHeaderButton {
                     title = "Összes Foglalás"
                     navigation = {
-                        AppState.reservations_onlyown = false
+                        AppState.displayPersonalReservationsOnly = false
                         PageNavigator.toReservations()
                     }
                 }
@@ -90,7 +90,7 @@ val PageHeaderComponent = FC<Props> {
                 PageHeaderButton {
                     title = "Foglalásaim"
                     navigation = {
-                        AppState.reservations_onlyown = true
+                        AppState.displayPersonalReservationsOnly = true
                         PageNavigator.toReservations()
                     }
                 }

@@ -15,13 +15,15 @@ object TokenStore {
         return window.sessionStorage.getItem(jwt_token) ?: ""
     }
 
+    fun clear() {
+        window.sessionStorage.removeItem(jwt_token)
+    }
 
-    // TODO
     /**
      * Warning! This is not entirely safe, as users can modify session storage
-     * However, to get actual info from the server, the entire token has to be sent
-     * (This is currently only used for page headline button rendering
-     * Which by the way they can do manually anyway, by changing the url, so no effect there either)
+     * This should only be used for rendering certain buttons and ui elements, NOT ACTUAL AUTHENTICATION
+     * To use the functionality, the entire authentication token has to be sent with the requests,
+     * which will be validated by the server anyway.
      */
     fun getUserPrivilege(): User.Privilege? {
         return try {
