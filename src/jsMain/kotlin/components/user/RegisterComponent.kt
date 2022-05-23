@@ -18,6 +18,7 @@ import registerUser
 import utils.browser.PageNavigator
 import utils.browser.TokenStore
 import utils.exceptions.ConflictException
+import utils.exceptions.PreconditionFailedException
 import utils.hash.sha256
 
 private val scope = MainScope()
@@ -76,8 +77,11 @@ val RegisterComponent = FC<RegisterComponentProps> { _ ->
                     setName(""); setEmail(""); setPassword(""); setPhone(""); setAddress("")
                     setMessage("")
                     PageNavigator.toDevices()
-                } catch (e: ConflictException) {
-                    setMessage("Ez az email cím már foglalt!")
+                } catch (e: Exception) {
+                    when (e) {
+                        is ConflictException -> setMessage("Ez az email cím már foglalt!")
+                        is PreconditionFailedException -> setMessage("Kérlek helyes formátumú adatokat írj be!")
+                    }
                 }
             }
         }

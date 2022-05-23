@@ -19,10 +19,10 @@ suspend inline fun PipelineContext<Unit, ApplicationCall>.requireAccessLevel(pri
 
 fun checkAccessLevel(principal: UserAuthPrincipal, required: Privilege): Boolean {
     return when (required) {
-        Privilege.Admin -> Privilege.Admin.compare(principal.privilege)
-        Privilege.Handler -> Privilege.Handler.compare(principal.privilege) || Privilege.Admin.compare(principal.privilege)
+        Privilege.Admin -> Privilege.Admin.eq(principal.privilege)
+        Privilege.Handler -> Privilege.Handler.eq(principal.privilege) || Privilege.Admin.eq(principal.privilege)
         Privilege.User -> true
     }
 }
 
-private fun Privilege.compare(other: String): Boolean = toString() == other
+private fun Privilege.eq(other: String): Boolean = toString() == other

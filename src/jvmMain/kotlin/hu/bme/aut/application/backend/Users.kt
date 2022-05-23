@@ -5,6 +5,9 @@ import hu.bme.aut.application.database.Database
 import hu.bme.aut.application.database.WrongIdException
 import hu.bme.aut.application.security.JwtConfig
 import model.User
+import utils.validators.isValidEmail
+import utils.validators.isValidNameHU
+import utils.validators.isValidPhoneNumber
 
 class Users(private val database: Database) {
 
@@ -17,11 +20,14 @@ class Users(private val database: Database) {
     }
 
     suspend fun registerUser(name: String, email: String, phone: String, address: String, pwHash: String): Result<Unit> {
-        return if (database.emailAlreadyExists(email).not()) {
-            Success(database.addUser(User(database.getNextUserId(), name, email, phone, address, pwHash, User.Privilege.User)))
-        } else {
-            Conflict("email already exists")
+        if (database.emailAlreadyExists(email)) {
+            return Conflict("Email already exist")
         }
+        if (!name.isValidNameHU()) return PreconditionFailed("name format")
+        if (!phone.isValidPhoneNumber()) return PreconditionFailed("phone number format")
+        if (!email.isValidEmail()) return PreconditionFailed("email format")
+
+        return Success(database.addUser(User(database.getNextUserId(), name, email, phone, address, pwHash, User.Privilege.User)))
     }
 
     suspend fun getUserNameById(userId: Int): Result<String> {
