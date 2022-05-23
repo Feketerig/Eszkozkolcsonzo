@@ -9,6 +9,7 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.browser.window
 import model.Device
+import model.Lease
 import model.Reservation
 import utils.browser.TokenStore
 import utils.exceptions.*
@@ -52,6 +53,12 @@ suspend fun addDevice(name: String, description: String) {
         header("Authorization", "Bearer " + TokenStore.getJwtToken())
         parameter("name", name)
         parameter("desc", description)
+    }
+}
+
+suspend fun getActiveLeaseList(): List<Lease> {
+    return jsonClient.get(endpoint + ServerApiPath.leasePath) {
+        header("Authorization", "Bearer " + TokenStore.getJwtToken())
     }
 }
 

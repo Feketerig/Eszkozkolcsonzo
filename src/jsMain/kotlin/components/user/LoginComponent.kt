@@ -1,6 +1,6 @@
 package components.user
 
-import components.LabeledInputField
+import components.utils.LabeledInputField
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch

@@ -1,4 +1,4 @@
-package components
+package components.utils
 
 import org.w3c.dom.HTMLInputElement
 import react.FC
