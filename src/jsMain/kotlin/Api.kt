@@ -75,6 +75,12 @@ suspend fun addReservation(deviceId: Int, from: Long, to: Long) {
     }
 }
 
+suspend fun deleteReservation(id: Int) {
+    return jsonClient.delete(endpoint + ServerApiPath.reservationPath + "/${id}"){
+        header("Authorization", "Bearer " + TokenStore.getJwtToken())
+    }
+}
+
 suspend fun registerUser(name: String, email: String, phone: String, address: String, pwHash: String) {
     return jsonClient.post(endpoint + ServerApiPath.userPath) {
         header("Authorization", "Bearer " + TokenStore.getJwtToken())
