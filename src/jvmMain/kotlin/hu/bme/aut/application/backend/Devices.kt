@@ -22,6 +22,14 @@ class Devices(private val database: Database) {
         }
     }
 
+    suspend fun getDeviceAvailability(id: Int, from: Long, to: Long): Result<Boolean> {
+        return try {
+            Success(database.checkDeviceAvailability(id, from, to))
+        } catch (e: WrongIdException) {
+            NotFound(id)
+        }
+    }
+
     suspend fun addDevice(name: String, desc: String): Result<Unit> {
         return Success(database.addDevice(Device(database.getNextDeviceId(), name, desc)))
     }

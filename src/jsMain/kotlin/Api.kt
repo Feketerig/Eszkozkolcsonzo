@@ -42,6 +42,14 @@ suspend fun getDeviceList(): List<Device>{
     return response.receive()
 }
 
+suspend fun getDeviceAvailability(id: Int, from: Long, to: Long): Boolean {
+    return jsonClient.get(endpoint + ServerApiPath.devicePath + "/${id}/available") {
+        header("Authorization", "Bearer " + TokenStore.getJwtToken())
+        parameter("from", from)
+        parameter("to", to)
+    }
+}
+
 suspend fun deleteDevice(id: Int) {
     return jsonClient.delete(endpoint + ServerApiPath.devicePath + "/${id}") {
         header("Authorization", "Bearer " + TokenStore.getJwtToken())

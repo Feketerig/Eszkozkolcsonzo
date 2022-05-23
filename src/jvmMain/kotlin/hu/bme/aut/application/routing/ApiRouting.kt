@@ -55,6 +55,16 @@ fun Application.deviceApi(devices: Devices){
                         else -> call.respond(HttpStatusCode.InternalServerError)
                     }
                 }
+                get("/{id}/available") {
+                    val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
+                    val from = call.parameters["from"]?.toLong() ?: error("start date must be specified")
+                    val to = call.parameters["to"]?.toLong() ?: error("end date must be specified")
+                    when (val result = devices.getDeviceAvailability(id, from, to)) {
+                        is Success -> call.respond(result.result)
+                        is NotFound -> call.respond(HttpStatusCode.NotFound)
+                        else -> call.respond(HttpStatusCode.InternalServerError)
+                    }
+                }
             }
         }
     }

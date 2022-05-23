@@ -1,6 +1,7 @@
 package components.reservation
 
 import addReservation
+import getDeviceAvailability
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -34,13 +35,22 @@ val ReservationCreateComponent = FC<ReservationCreateProps> { props ->
 
     val startChangeHandler: ChangeEventHandler<HTMLInputElement> = {
         setStartDate(it.target.value)
-        setMessage("")
+        MainScope().launch {
+            if (getDeviceAvailability(props.device.id, Date(startDate).getTime().toLong(), Date(endDate).getTime().toLong()))
+                setMessage("")
+            else
+                setMessage("Az eszköz ebben az időszakban már foglalt")
+        }
     }
 
     val endChangeHandler: ChangeEventHandler<HTMLInputElement> = {
         setEndDate(it.target.value)
-        setMessage("")
-        //TODO check if device can be reserved for this period in real time
+        MainScope().launch {
+            if (getDeviceAvailability(props.device.id, Date(startDate).getTime().toLong(), Date(endDate).getTime().toLong()))
+                setMessage("")
+            else
+                setMessage("Az eszköz ebben az időszakban már foglalt")
+        }
     }
 
     val submitHandler: FormEventHandler<HTMLFormElement> = {
