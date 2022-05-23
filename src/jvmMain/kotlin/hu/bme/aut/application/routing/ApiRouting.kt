@@ -153,6 +153,14 @@ fun Application.reservationApi(reservations: Reservations) {
                         }
                     }
                 }
+                get("/device/{id}/time") {
+                    val id = call.parameters["id"]?.toInt() ?: error("Invalid id")
+                    when (val result = reservations.getReservationsByDeviceId(id)) {
+                        is Success -> call.respond(result.result.map { res -> "${res.startDate}-${res.endDate}" })
+                        is NotFound -> call.respond(HttpStatusCode.NotFound)
+                        else -> call.respond(HttpStatusCode.InternalServerError)
+                    }
+                }
                 get("/user") {
                     val id = (call.authentication.principal as UserAuthPrincipal).id
                     when (val result = reservations.getAllReservationByUserId(id)) {
