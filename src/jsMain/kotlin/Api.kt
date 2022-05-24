@@ -74,7 +74,7 @@ suspend fun getReservationList(): List<Reservation> {
 }
 
 suspend fun getReservationListForCurrentUser(): List<Reservation> {
-    return jsonClient.get(endpoint + ServerApiPath.reservationPath + "/user") {
+    return jsonClient.get(endpoint + ServerApiPath.reservationPath + "/me") {
         header("Authorization", "Bearer " + TokenStore.getJwtToken())
     }
 }

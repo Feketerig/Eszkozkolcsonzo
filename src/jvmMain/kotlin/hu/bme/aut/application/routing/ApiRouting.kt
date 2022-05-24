@@ -161,7 +161,7 @@ fun Application.reservationApi(reservations: Reservations) {
                         else -> call.respond(HttpStatusCode.InternalServerError)
                     }
                 }
-                get("/user") {
+                get("/me") {
                     val id = (call.authentication.principal as UserAuthPrincipal).id
                     when (val result = reservations.getAllReservationByUserId(id)) {
                         is Success -> call.respond(result.result)
