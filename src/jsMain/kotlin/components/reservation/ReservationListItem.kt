@@ -10,6 +10,8 @@ import react.dom.html.ReactHTML.li
 import react.dom.html.ReactHTML.p
 import react.key
 import utils.browser.TokenStore
+import utils.converters.YYYY_MM_DD
+import kotlin.js.Date
 
 external interface ReservationListItemProps : Props {
     var reservation: Reservation
@@ -24,7 +26,7 @@ val ReservationListItem = FC<ReservationListItemProps> { props ->
         div {
             p {
                 +"Device ${props.reservation.deviceId} reserved by ${props.reservation.userId} "
-                +"from: ${props.reservation.startDate} \t to: ${props.reservation.endDate}"
+                +"from: ${Date(props.reservation.startDate).YYYY_MM_DD()} \t to: ${Date(props.reservation.endDate).YYYY_MM_DD()}"
             }
         }
 

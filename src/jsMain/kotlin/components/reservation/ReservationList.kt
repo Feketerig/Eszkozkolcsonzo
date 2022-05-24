@@ -18,24 +18,19 @@ import utils.exceptions.UnauthorizedException
 
 private val scope = MainScope()
 
-external interface ReservationListProps : Props
-
-val ReservationList = FC<ReservationListProps> {
+val ReservationList = FC<Props> {
     var reservationList by useState(emptyList<Reservation>())
     val userId by useState(TokenStore.getUserId())
 
     useEffectOnce {
-        scope.launch {//TODO This is great, it works, but it shouldnt be here. redirect to login should happen on the server immediately
-                      //TODO This kind of solution is only for low access level, not generally having to be logged in.
-                      //TODO Also this should be in a function, not to spam it everywhere
+        scope.launch {
             try {
                 reservationList = getReservations()
             } catch (e: UnauthorizedException) {
-                PageNavigator.toLogin()
+                PageNavigator.toLogin() //TODO move login redirect to somewhere more general
             }
         }
     }
-
 
     ul {
         reservationList.forEach { item ->
@@ -52,7 +47,6 @@ val ReservationList = FC<ReservationListProps> {
         }
     }
 }
-
 
 private suspend fun getReservations(): List<Reservation> {
     return if (AppState.displayPersonalReservationsOnly) {

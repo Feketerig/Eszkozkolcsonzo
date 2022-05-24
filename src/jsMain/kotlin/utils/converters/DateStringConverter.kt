@@ -4,7 +4,6 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.toJSDate
 import kotlin.js.Date
 
-
 fun Instant.YYYY_MM_DD(): String {
     return toJSDate().YYYY_MM_DD()
 }

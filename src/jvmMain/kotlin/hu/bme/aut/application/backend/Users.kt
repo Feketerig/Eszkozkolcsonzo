@@ -20,9 +20,8 @@ class Users(private val database: Database) {
     }
 
     suspend fun registerUser(name: String, email: String, phone: String, address: String, pwHash: String): Result<Unit> {
-        if (database.emailAlreadyExists(email)) {
-            return Conflict("Email already exist")
-        }
+        if (database.emailAlreadyExists(email)) return Conflict("Email already exist")
+
         if (!name.isValidNameHU()) return PreconditionFailed("name format")
         if (!phone.isValidPhoneNumber()) return PreconditionFailed("phone number format")
         if (!email.isValidEmail()) return PreconditionFailed("email format")

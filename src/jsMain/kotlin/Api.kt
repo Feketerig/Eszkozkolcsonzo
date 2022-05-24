@@ -1,11 +1,9 @@
 
 import io.ktor.client.*
-import io.ktor.client.call.*
 import io.ktor.client.features.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.browser.window
 import model.Device
@@ -36,10 +34,9 @@ val jsonClient = HttpClient {
 }
 
 suspend fun getDeviceList(): List<Device>{
-    val response: HttpResponse = jsonClient.get(endpoint + ServerApiPath.devicePath) {
+    return jsonClient.get(endpoint + ServerApiPath.devicePath) {
         header("Authorization", "Bearer " + TokenStore.getJwtToken())
     }
-    return response.receive()
 }
 
 suspend fun getDeviceAvailability(id: Int, from: Long, to: Long): Boolean {

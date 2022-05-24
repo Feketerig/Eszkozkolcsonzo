@@ -11,7 +11,6 @@ import react.dom.html.ReactHTML.button
 import react.dom.html.ReactHTML.form
 import react.dom.html.ReactHTML.input
 
-
 external interface DeviceInputProps : Props {
     var onSubmit: (name: String, description: String) -> Unit
 }

@@ -28,7 +28,6 @@ external interface ReservationCreateProps : Props {
 }
 
 val ReservationCreateComponent = FC<ReservationCreateProps> { props ->
-
     val (startDate, setStartDate) = useState(Clock.System.now().YYYY_MM_DD())
     val (endDate, setEndDate) = useState(Clock.System.now().YYYY_MM_DD())
     val (message, setMessage) = useState("")

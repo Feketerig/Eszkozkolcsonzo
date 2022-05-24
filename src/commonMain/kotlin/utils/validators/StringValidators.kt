@@ -2,7 +2,7 @@ package utils.validators
 
 
 fun String.isValidNameHU(): Boolean {
-    return this.all { c -> c.isLetter() || c == ' ' || c in "áÁéÉíÍóÓöÖőŐúÚüÜűŰ" }
+    return this.all { c -> c.isLetter() || c in "áÁéÉíÍóÓöÖőŐúÚüÜűŰ .-" }
 }
 
 fun String.isValidPhoneNumber(): Boolean {

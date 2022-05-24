@@ -23,9 +23,7 @@ import utils.hash.sha256
 
 private val scope = MainScope()
 
-external interface RegisterComponentProps : Props
-
-val RegisterComponent = FC<RegisterComponentProps> { _ ->
+val RegisterComponent = FC<Props> { _ ->
     val (email, setEmail) = useState("")
     val (password, setPassword) = useState("")
     val (name, setName) = useState("")
@@ -63,7 +61,6 @@ val RegisterComponent = FC<RegisterComponentProps> { _ ->
                 onChange = { setAddress(it.target.value) }
             }
         }
-
         p {
             +message
         }

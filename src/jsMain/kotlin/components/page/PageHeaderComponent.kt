@@ -12,7 +12,6 @@ import utils.browser.AppState
 import utils.browser.PageNavigator
 import utils.browser.TokenStore
 
-
 val PageHeaderComponent = FC<Props> {
     nav {
         css {

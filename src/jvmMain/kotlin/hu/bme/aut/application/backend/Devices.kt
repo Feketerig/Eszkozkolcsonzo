@@ -36,10 +36,11 @@ class Devices(private val database: Database) {
 
     suspend fun deleteDevice(id: Int): Result<Unit> {
         return try {
-            if (database.getReservationsByDeviceId(id).isEmpty())
+            if (database.getReservationsByDeviceId(id).isEmpty()) {
                 Success(database.deleteDevice(id))
-            else
+            } else {
                 Conflict("device is reserved, cannot be deleted")
+            }
         } catch (e: Exception) {
             NotFound(id)
         }

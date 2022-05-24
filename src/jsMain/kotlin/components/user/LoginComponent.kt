@@ -22,9 +22,7 @@ import utils.hash.sha256
 
 private val scope = MainScope()
 
-external interface LoginComponentProps : Props
-
-val LoginComponent = FC<LoginComponentProps> { props ->
+val LoginComponent = FC<Props> { _ ->
     val (email, setEmail) = useState("")
     val (password, setPassword) = useState("")
     val (message, setMessage) = useState("")
@@ -44,7 +42,6 @@ val LoginComponent = FC<LoginComponentProps> { props ->
                 onChange = { setPassword(it.target.value) }
             }
         }
-
         p {
             +message
         }
