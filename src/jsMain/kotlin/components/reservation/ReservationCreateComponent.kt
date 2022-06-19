@@ -68,8 +68,8 @@ val ReservationCreateComponent = FC<ReservationCreateProps> { props ->
         onSubmit = submitHandler
 
         div {
-            +"Eszköz foglalása:"
-            +"${props.device.name} \t ${props.device.desc}"
+            +"Eszköz foglalása: "
+            +props.device.name
         }
 
         input {

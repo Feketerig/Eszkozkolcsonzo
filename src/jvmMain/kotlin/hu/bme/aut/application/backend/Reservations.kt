@@ -38,7 +38,7 @@ class Reservations(private val database: Database) {
                 database.addReservation(Reservation(database.getNextReservationId(), deviceId, from, to, userId))
                 Success(Unit)
             }
-            else{
+            else {
                 Conflict("device $deviceId is already reserved in this time window")
             }
         } catch (e: WrongIdException) {
